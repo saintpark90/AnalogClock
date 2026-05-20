@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-numeral="arabic">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="전체화면 아날로그 시계">
+  <title>Analog Clock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="toolbar" aria-label="도구">
+    <button type="button" class="toolbar__btn" id="btn-fullscreen" aria-label="전체화면" title="전체화면 (F)">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M4 15v5h5M20 9V4h-5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="toolbar__btn" id="btn-color-mode" aria-label="라이트 모드로 전환" title="다크/라이트 (L)">
+      <svg class="icon icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+      <svg class="icon icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 7 7 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+    </button>
+    <button type="button" class="toolbar__btn" id="btn-settings" aria-label="설정" title="설정 (S)" aria-controls="settings-dialog" aria-expanded="false">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2v2M12 20v2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M22 12h-2M4 12H2M19.07 19.07l-1.41-1.41M6.34 6.34L4.93 4.93" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <main class="clock-app">
+    <div class="clock" role="img" aria-label="아날로그 시계">
+      <div class="clock__face">
+        <ul class="clock__markers" aria-hidden="true">
+          <li></li><li></li><li></li><li></li><li></li><li></li>
+          <li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+
+        <ol class="clock__numbers" aria-hidden="true">
+          <li><span data-n="12">12</span></li>
+          <li><span data-n="1">1</span></li>
+          <li><span data-n="2">2</span></li>
+          <li><span data-n="3">3</span></li>
+          <li><span data-n="4">4</span></li>
+          <li><span data-n="5">5</span></li>
+          <li><span data-n="6">6</span></li>
+          <li><span data-n="7">7</span></li>
+          <li><span data-n="8">8</span></li>
+          <li><span data-n="9">9</span></li>
+          <li><span data-n="10">10</span></li>
+          <li><span data-n="11">11</span></li>
+        </ol>
+
+        <div class="hand hand--hour" aria-hidden="true"></div>
+        <div class="hand hand--minute" aria-hidden="true"></div>
+        <div class="hand hand--second" aria-hidden="true"></div>
+        <div class="clock__hub" aria-hidden="true"></div>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="settings" id="settings-dialog" aria-labelledby="settings-title">
+    <form class="settings__form" method="dialog">
+      <header class="settings__header">
+        <h2 id="settings-title">설정</h2>
+        <button type="button" class="settings__close" data-close aria-label="닫기">×</button>
+      </header>
+
+      <div class="settings__body">
+        <section class="settings__section">
+          <h3>숫자</h3>
+          <label class="settings__row">
+            <span>크기</span>
+            <input type="range" id="set-number-size" min="0.6" max="1.8" step="0.05" value="1">
+            <output id="out-number-size">100%</output>
+          </label>
+          <fieldset class="settings__fieldset">
+            <legend class="visually-hidden">숫자 표기</legend>
+            <label class="settings__chip"><input type="radio" name="numeral" value="arabic" checked> 아라비아</label>
+            <label class="settings__chip"><input type="radio" name="numeral" value="roman"> 로마</label>
+          </fieldset>
+        </section>
+
+        <section class="settings__section">
+          <h3>바늘 모양</h3>
+          <select id="set-hand-style" class="settings__select">
+            <option value="bar">막대형</option>
+            <option value="arrow">화살표형</option>
+            <option value="square">네모형</option>
+            <option value="rounded">둥근형</option>
+          </select>
+        </section>
+
+        <section class="settings__section">
+          <h3>시계 모양</h3>
+          <select id="set-face-shape" class="settings__select">
+            <option value="circle">원형</option>
+            <option value="square">정사각형</option>
+            <option value="rect-portrait">직사각형 (세로)</option>
+            <option value="rect-landscape">직사각형 (가로)</option>
+            <option value="trapezoid">사다리꼴</option>
+          </select>
+        </section>
+
+        <section class="settings__section settings__section--colors">
+          <h3>색상</h3>
+          <div class="settings__colors" id="color-inputs"></div>
+          <button type="button" class="settings__reset-colors" id="btn-reset-colors">색상 초기화</button>
+        </section>
+      </div>
+
+      <footer class="settings__footer">
+        <button type="button" class="settings__btn settings__btn--ghost" data-close>닫기</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
