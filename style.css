@@ -128,6 +128,25 @@ body::before {
   height: 1.25rem;
 }
 
+/* Settings (gear) icon tweaks */
+.icon--settings {
+  width: 1.3rem;
+  height: 1.3rem;
+  transition: transform 0.12s ease, color 0.12s ease;
+  transform-origin: center;
+  color: var(--ui-text);
+}
+
+.toolbar__btn:hover .icon--settings {
+  transform: rotate(12deg) scale(1.06);
+}
+
+.toolbar__btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(107, 159, 255, 0.12);
+  border-radius: 8px;
+}
+
 [data-color-mode="dark"] .icon--sun { display: block; }
 [data-color-mode="dark"] .icon--moon { display: none; }
 [data-color-mode="light"] .icon--sun { display: none; }
