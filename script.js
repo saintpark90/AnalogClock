@@ -59,9 +59,11 @@ const PALETTES = {
 const DEFAULT_SETTINGS = {
   colorMode: "dark",
   numberSize: 1,
+  clockSize: 1,
   numeral: "arabic",
   handStyle: "bar",
   faceShape: "circle",
+  borderStyle: "solid",
   colors: { ...PALETTES.dark, hubRing: PALETTES.dark.hubRing },
 };
 
@@ -110,8 +112,10 @@ class SettingsManager {
     this.root.dataset.colorMode = s.colorMode;
     this.root.dataset.handStyle = s.handStyle;
     this.root.dataset.faceShape = s.faceShape;
+    this.root.dataset.borderStyle = s.borderStyle;
     this.root.dataset.numeral = s.numeral;
     this.root.style.setProperty("--number-scale", String(s.numberSize));
+    this.root.style.setProperty("--clock-scale", String(s.clockSize));
 
     COLOR_KEYS.forEach(({ key, css }) => {
       const val = s.colors[key];
@@ -284,38 +288,41 @@ function buildColorInputs(container, settings) {
 }
 
 function bindSettingsUI(settingsMgr) {
-  const dialog = document.getElementById("settings-dialog");
+  const panel = document.getElementById("settings-panel");
   const btnSettings = document.getElementById("btn-settings");
   const btnColorMode = document.getElementById("btn-color-mode");
   const slider = document.getElementById("set-number-size");
   const outSize = document.getElementById("out-number-size");
+  const clockSlider = document.getElementById("set-clock-size");
+  const outClockSize = document.getElementById("out-clock-size");
   const handSelect = document.getElementById("set-hand-style");
   const faceSelect = document.getElementById("set-face-shape");
+  const borderSelect = document.getElementById("set-border-style");
   const colorContainer = document.getElementById("color-inputs");
   const btnResetColors = document.getElementById("btn-reset-colors");
 
   buildColorInputs(colorContainer, settingsMgr.settings);
 
   const openSettings = () => {
-    dialog.showModal();
+    panel.hidden = false;
+    document.body.classList.add("settings-open");
     btnSettings?.setAttribute("aria-expanded", "true");
     settingsMgr._syncColorInputs();
   };
 
   const closeSettings = () => {
-    dialog.close();
+    panel.hidden = true;
+    document.body.classList.remove("settings-open");
     btnSettings?.setAttribute("aria-expanded", "false");
   };
 
-  btnSettings?.addEventListener("click", openSettings);
-  dialog.querySelectorAll("[data-close]").forEach((el) => {
+  btnSettings?.addEventListener("click", () => {
+    if (!panel.hidden) closeSettings();
+    else openSettings();
+  });
+  panel.querySelectorAll("[data-close]").forEach((el) => {
     el.addEventListener("click", closeSettings);
   });
-  dialog.addEventListener("cancel", (e) => {
-    e.preventDefault();
-    closeSettings();
-  });
-  dialog.addEventListener("close", () => btnSettings?.setAttribute("aria-expanded", "false"));
 
   btnColorMode?.addEventListener("click", () => {
     settingsMgr.toggleColorMode();
@@ -327,6 +334,12 @@ function bindSettingsUI(settingsMgr) {
     const v = Number(slider.value);
     if (outSize) outSize.textContent = `${Math.round(v * 100)}%`;
     settingsMgr.set({ numberSize: v });
+  });
+
+  clockSlider?.addEventListener("input", () => {
+    const v = Number(clockSlider.value);
+    if (outClockSize) outClockSize.textContent = `${Math.round(v * 100)}%`;
+    settingsMgr.set({ clockSize: v });
   });
 
   document.querySelectorAll('input[name="numeral"]').forEach((radio) => {
@@ -341,6 +354,10 @@ function bindSettingsUI(settingsMgr) {
 
   faceSelect?.addEventListener("change", () => {
     settingsMgr.set({ faceShape: faceSelect.value });
+  });
+
+  borderSelect?.addEventListener("change", () => {
+    settingsMgr.set({ borderStyle: borderSelect.value });
   });
 
   colorContainer?.addEventListener("input", (e) => {
@@ -360,11 +377,16 @@ function bindSettingsUI(settingsMgr) {
       slider.value = String(s.numberSize);
       if (outSize) outSize.textContent = `${Math.round(s.numberSize * 100)}%`;
     }
+    if (clockSlider && Math.abs(Number(clockSlider.value) - s.clockSize) > 0.001) {
+      clockSlider.value = String(s.clockSize);
+      if (outClockSize) outClockSize.textContent = `${Math.round(s.clockSize * 100)}%`;
+    }
     document.querySelectorAll('input[name="numeral"]').forEach((r) => {
       r.checked = r.value === s.numeral;
     });
     if (handSelect) handSelect.value = s.handStyle;
     if (faceSelect) faceSelect.value = s.faceShape;
+    if (borderSelect) borderSelect.value = s.borderStyle;
     syncColorModeButton(btnColorMode, s.colorMode);
   });
 }
@@ -381,19 +403,25 @@ function syncUIFromSettings(settingsMgr) {
   const s = settingsMgr.settings;
   const slider = document.getElementById("set-number-size");
   const outSize = document.getElementById("out-number-size");
+  const clockSlider = document.getElementById("set-clock-size");
+  const outClockSize = document.getElementById("out-clock-size");
   if (slider) slider.value = String(s.numberSize);
   if (outSize) outSize.textContent = `${Math.round(s.numberSize * 100)}%`;
+  if (clockSlider) clockSlider.value = String(s.clockSize ?? 1);
+  if (outClockSize) outClockSize.textContent = `${Math.round((s.clockSize ?? 1) * 100)}%`;
   document.querySelectorAll('input[name="numeral"]').forEach((r) => {
     r.checked = r.value === s.numeral;
   });
   const handSelect = document.getElementById("set-hand-style");
   const faceSelect = document.getElementById("set-face-shape");
+  const borderSelect = document.getElementById("set-border-style");
   if (handSelect) handSelect.value = s.handStyle;
   if (faceSelect) faceSelect.value = s.faceShape;
+  if (borderSelect) borderSelect.value = s.borderStyle ?? "solid";
   syncColorModeButton(document.getElementById("btn-color-mode"), s.colorMode);
 }
 
-function bindKeyboard(fullscreen, settingsDialog) {
+function bindKeyboard(fullscreen, settingsPanel) {
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input, select, textarea")) return;
     const key = e.key.toLowerCase();
@@ -403,11 +431,13 @@ function bindKeyboard(fullscreen, settingsDialog) {
     } else if (key === "l") {
       e.preventDefault();
       document.getElementById("btn-color-mode")?.click();
-    } else if (key === "s" && !settingsDialog.open) {
+    } else if (key === "s" && settingsPanel.hidden) {
       e.preventDefault();
       document.getElementById("btn-settings")?.click();
-    } else if (key === "escape" && settingsDialog.open) {
-      settingsDialog.close();
+    } else if (key === "escape" && !settingsPanel.hidden) {
+      settingsPanel.hidden = true;
+      document.body.classList.remove("settings-open");
+      document.getElementById("btn-settings")?.setAttribute("aria-expanded", "false");
     }
   });
 }
@@ -421,10 +451,10 @@ function init() {
   clock.start();
 
   const fullscreen = new FullscreenController(document.getElementById("btn-fullscreen"));
-  const dialog = document.getElementById("settings-dialog");
+  const panel = document.getElementById("settings-panel");
 
   bindSettingsUI(settingsMgr);
-  bindKeyboard(fullscreen, dialog);
+  bindKeyboard(fullscreen, panel);
 
   window.AnalogClockApp = { settings: settingsMgr, clock, fullscreen };
 }

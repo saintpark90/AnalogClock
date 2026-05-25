@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-numeral="arabic">
+<html lang="ko" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-border-style="solid" data-numeral="arabic">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +16,14 @@
       <svg class="icon icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
       <svg class="icon icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 7 7 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
     </button>
-    <button type="button" class="toolbar__btn" id="btn-settings" aria-label="설정" title="설정 (S)" aria-controls="settings-dialog" aria-expanded="false">
+    <button type="button" class="toolbar__btn" id="btn-settings" aria-label="설정" title="설정 (S)" aria-controls="settings-panel" aria-expanded="false">
       <svg class="icon icon--settings" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
         <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 00.12-.61l-1.92-3.32a.5.5 0 00-.57-.22l-2.39.96a7.07 7.07 0 00-1.6-.94L14.5 2.5a.5.5 0 00-.5-.5h-4a.5.5 0 00-.5.5L9.09 5.09c-.54.24-1.06.56-1.56.94L5.11 5.08a.5.5 0 00-.57.22L2.62 8.62a.5.5 0 00.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.62 14.5a.5.5 0 00-.12.61l1.92 3.32c.11.2.36.28.57.22l2.39-.96c.5.38 1.02.7 1.6.94l.41 2.59c.04.27.29.5.56.5h4c.27 0 .52-.22.56-.5l.41-2.59c.58-.24 1.1-.56 1.6-.94l2.39.96c.21.06.46-.02.57-.22l1.92-3.32a.5.5 0 00-.12-.61l-2.03-1.58zM12 15.5A3.5 3.5 0 1115.5 12 3.5 3.5 0 0112 15.5z"/>
       </svg>
     </button>
   </header>
 
+  <div class="app-layout">
   <main class="clock-app">
     <div class="clock" role="img" aria-label="아날로그 시계">
       <div class="clock__face">
@@ -54,8 +55,8 @@
     </div>
   </main>
 
-  <dialog class="settings" id="settings-dialog" aria-labelledby="settings-title">
-    <form class="settings__form" method="dialog">
+  <aside class="settings" id="settings-panel" hidden aria-labelledby="settings-title">
+    <form class="settings__form">
       <header class="settings__header">
         <h2 id="settings-title">설정</h2>
         <button type="button" class="settings__close" data-close aria-label="닫기">×</button>
@@ -74,6 +75,15 @@
             <label class="settings__chip"><input type="radio" name="numeral" value="arabic" checked> 아라비아</label>
             <label class="settings__chip"><input type="radio" name="numeral" value="roman"> 로마</label>
           </fieldset>
+        </section>
+
+        <section class="settings__section">
+          <h3>시계</h3>
+          <label class="settings__row">
+            <span>크기</span>
+            <input type="range" id="set-clock-size" min="0.5" max="1.5" step="0.05" value="1">
+            <output id="out-clock-size">100%</output>
+          </label>
         </section>
 
         <section class="settings__section">
@@ -97,18 +107,30 @@
           </select>
         </section>
 
+        <section class="settings__section">
+          <h3>테두리 스타일</h3>
+          <select id="set-border-style" class="settings__select">
+            <option value="solid">실선</option>
+            <option value="thin">가는 실선</option>
+            <option value="double">이중선</option>
+            <option value="dashed">파선</option>
+            <option value="dotted">점선</option>
+            <option value="ring">링</option>
+            <option value="glow">글로우</option>
+            <option value="raised">입체</option>
+            <option value="classic">클래식</option>
+          </select>
+        </section>
+
         <section class="settings__section settings__section--colors">
           <h3>색상</h3>
           <div class="settings__colors" id="color-inputs"></div>
           <button type="button" class="settings__reset-colors" id="btn-reset-colors">색상 초기화</button>
         </section>
       </div>
-
-      <footer class="settings__footer">
-        <button type="button" class="settings__btn settings__btn--ghost" data-close>닫기</button>
-      </footer>
     </form>
-  </dialog>
+  </aside>
+  </div>
 
   <script src="script.js"></script>
 </body>
