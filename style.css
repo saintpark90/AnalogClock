@@ -26,6 +26,7 @@
   --hand-second-w: 2px;
   --number-scale: 1;
   --clock-scale: 1;
+  --wallpaper-image: none;
 
   --ui-bg: rgba(20, 20, 24, 0.82);
   --ui-border: rgba(255, 255, 255, 0.1);
@@ -71,7 +72,11 @@ body {
 
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image: var(--wallpaper-image);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   color: var(--ui-text);
   -webkit-font-smoothing: antialiased;
 }
@@ -83,6 +88,12 @@ body::before {
   background: var(--bg-accent);
   pointer-events: none;
   z-index: 0;
+}
+
+[data-wallpaper="custom"] body::before {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.16)),
+    var(--bg-accent);
 }
 
 .visually-hidden {
@@ -625,7 +636,7 @@ body.settings-open .settings:not([hidden]) {
   flex: 1;
   min-height: 0;
   padding: 0.55rem 0.85rem 0.7rem;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -732,6 +743,74 @@ body.settings-open .settings:not([hidden]) {
 
 [data-color-mode="light"] .settings__select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e73' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E");
+}
+
+.settings__section--wallpaper {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.settings__file {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--ui-border);
+  background: rgba(127, 127, 140, 0.12);
+  color: var(--ui-text);
+  font-size: 0.74rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.settings__file:hover,
+.settings__file:focus-within {
+  border-color: var(--color-hand-second);
+  background: rgba(107, 159, 255, 0.14);
+}
+
+.settings__file input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.settings__file span {
+  display: block;
+  padding: 0.38rem 0.5rem;
+}
+
+.settings__wallpaper-status {
+  overflow: hidden;
+  color: var(--ui-muted);
+  font-size: 0.68rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings__reset-wallpaper {
+  width: 100%;
+  padding: 0.35rem;
+  border: 1px dashed var(--ui-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ui-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.settings__reset-wallpaper:hover:not(:disabled) {
+  color: var(--ui-text);
+  border-style: solid;
+}
+
+.settings__reset-wallpaper:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .settings__colors {

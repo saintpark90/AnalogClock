@@ -3,6 +3,7 @@
  */
 
 const STORAGE_KEY = "analog-clock-settings";
+const WALLPAPER_NONE_TEXT = "선택된 이미지 없음";
 
 const ROMAN = {
   12: "XII", 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI",
@@ -64,6 +65,8 @@ const DEFAULT_SETTINGS = {
   handStyle: "bar",
   faceShape: "circle",
   borderStyle: "solid",
+  wallpaperImage: "",
+  wallpaperName: "",
   colors: { ...PALETTES.dark, hubRing: PALETTES.dark.hubRing },
 };
 
@@ -102,8 +105,9 @@ class SettingsManager {
   save() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings));
+      return true;
     } catch {
-      /* ignore */
+      return false;
     }
   }
 
@@ -114,8 +118,13 @@ class SettingsManager {
     this.root.dataset.faceShape = s.faceShape;
     this.root.dataset.borderStyle = s.borderStyle;
     this.root.dataset.numeral = s.numeral;
+    this.root.dataset.wallpaper = s.wallpaperImage ? "custom" : "default";
     this.root.style.setProperty("--number-scale", String(s.numberSize));
     this.root.style.setProperty("--clock-scale", String(s.clockSize));
+    this.root.style.setProperty(
+      "--wallpaper-image",
+      s.wallpaperImage ? `url(${JSON.stringify(s.wallpaperImage)})` : "none"
+    );
 
     COLOR_KEYS.forEach(({ key, css }) => {
       const val = s.colors[key];
@@ -144,7 +153,7 @@ class SettingsManager {
       this.settings.colors = { ...this.settings.colors, ...partial.colors };
     }
     this.apply();
-    this.save();
+    return this.save();
   }
 
   toggleColorMode() {
@@ -189,6 +198,39 @@ function toHex(color) {
   const m = rgb.match(/\d+/g);
   if (!m) return "#000000";
   return `#${m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function readWallpaperFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      reject(new Error("이미지 파일만 선택할 수 있습니다."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      if (!result.startsWith("data:image/")) {
+        reject(new Error("이미지를 불러오지 못했습니다."));
+        return;
+      }
+      resolve(result);
+    });
+    reader.addEventListener("error", () => {
+      reject(reader.error || new Error("이미지를 불러오지 못했습니다."));
+    });
+    reader.readAsDataURL(file);
+  });
+}
+
+function syncWallpaperControls(statusEl, resetBtn, settings) {
+  const hasWallpaper = Boolean(settings.wallpaperImage);
+  if (statusEl) {
+    statusEl.textContent = hasWallpaper
+      ? `${settings.wallpaperName || "사용자 이미지"} 적용됨`
+      : WALLPAPER_NONE_TEXT;
+  }
+  if (resetBtn) resetBtn.disabled = !hasWallpaper;
 }
 
 class AnalogClock {
@@ -298,16 +340,21 @@ function bindSettingsUI(settingsMgr) {
   const handSelect = document.getElementById("set-hand-style");
   const faceSelect = document.getElementById("set-face-shape");
   const borderSelect = document.getElementById("set-border-style");
+  const wallpaperInput = document.getElementById("set-wallpaper-image");
+  const wallpaperStatus = document.getElementById("wallpaper-status");
+  const btnResetWallpaper = document.getElementById("btn-reset-wallpaper");
   const colorContainer = document.getElementById("color-inputs");
   const btnResetColors = document.getElementById("btn-reset-colors");
 
   buildColorInputs(colorContainer, settingsMgr.settings);
+  syncWallpaperControls(wallpaperStatus, btnResetWallpaper, settingsMgr.settings);
 
   const openSettings = () => {
     panel.hidden = false;
     document.body.classList.add("settings-open");
     btnSettings?.setAttribute("aria-expanded", "true");
     settingsMgr._syncColorInputs();
+    syncWallpaperControls(wallpaperStatus, btnResetWallpaper, settingsMgr.settings);
   };
 
   const closeSettings = () => {
@@ -360,6 +407,35 @@ function bindSettingsUI(settingsMgr) {
     settingsMgr.set({ borderStyle: borderSelect.value });
   });
 
+  wallpaperInput?.addEventListener("change", async () => {
+    const file = wallpaperInput.files?.[0];
+    if (!file) return;
+    if (wallpaperStatus) wallpaperStatus.textContent = "이미지 불러오는 중...";
+
+    try {
+      const wallpaperImage = await readWallpaperFile(file);
+      const saved = settingsMgr.set({
+        wallpaperImage,
+        wallpaperName: file.name,
+      });
+      syncWallpaperControls(wallpaperStatus, btnResetWallpaper, settingsMgr.settings);
+      if (!saved && wallpaperStatus) {
+        wallpaperStatus.textContent = "이미지가 적용됐지만 저장 공간이 부족해 새로고침 후 사라질 수 있습니다.";
+      }
+    } catch (err) {
+      if (wallpaperStatus) {
+        wallpaperStatus.textContent = err?.message || "이미지를 불러오지 못했습니다.";
+      }
+    } finally {
+      wallpaperInput.value = "";
+    }
+  });
+
+  btnResetWallpaper?.addEventListener("click", () => {
+    settingsMgr.set({ wallpaperImage: "", wallpaperName: "" });
+    syncWallpaperControls(wallpaperStatus, btnResetWallpaper, settingsMgr.settings);
+  });
+
   colorContainer?.addEventListener("input", (e) => {
     const input = e.target;
     if (input.dataset?.colorKey) {
@@ -387,6 +463,7 @@ function bindSettingsUI(settingsMgr) {
     if (handSelect) handSelect.value = s.handStyle;
     if (faceSelect) faceSelect.value = s.faceShape;
     if (borderSelect) borderSelect.value = s.borderStyle;
+    syncWallpaperControls(wallpaperStatus, btnResetWallpaper, s);
     syncColorModeButton(btnColorMode, s.colorMode);
   });
 }
@@ -415,9 +492,12 @@ function syncUIFromSettings(settingsMgr) {
   const handSelect = document.getElementById("set-hand-style");
   const faceSelect = document.getElementById("set-face-shape");
   const borderSelect = document.getElementById("set-border-style");
+  const wallpaperStatus = document.getElementById("wallpaper-status");
+  const btnResetWallpaper = document.getElementById("btn-reset-wallpaper");
   if (handSelect) handSelect.value = s.handStyle;
   if (faceSelect) faceSelect.value = s.faceShape;
   if (borderSelect) borderSelect.value = s.borderStyle ?? "solid";
+  syncWallpaperControls(wallpaperStatus, btnResetWallpaper, s);
   syncColorModeButton(document.getElementById("btn-color-mode"), s.colorMode);
 }
 
