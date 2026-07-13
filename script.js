@@ -1,8 +1,380 @@
+const STORAGE_KEY = "analog-clock-settings";
+const IMAGE_DB_NAME = "analog-clock-images";
+const IMAGE_DB_VERSION = 1;
+const IMAGE_STORE_NAME = "images";
+const IMAGE_KEYS = ["bg", "faceBg"];
+const IMAGE_CSS = {
+  bg: { varName: "--bg-image", flag: "bgImage" },
+  faceBg: { varName: "--face-bg-image", flag: "faceBgImage" },
+};
+
+/* ==========================================================================
+   Background images — IndexedDB (local only, no server)
+   ========================================================================== */
+
+function openImageDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IMAGE_DB_NAME, IMAGE_DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IMAGE_STORE_NAME)) {
+        db.createObjectStore(IMAGE_STORE_NAME);
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbGet(key) {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IMAGE_STORE_NAME, "readonly");
+    const req = tx.objectStore(IMAGE_STORE_NAME).get(key);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbSet(key, value) {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IMAGE_STORE_NAME, "readwrite");
+    tx.objectStore(IMAGE_STORE_NAME).put(value, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function idbDelete(key) {
+  const db = await openImageDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IMAGE_STORE_NAME, "readwrite");
+    tx.objectStore(IMAGE_STORE_NAME).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function optimizeImageBlob(blob) {
+  if (!blob || !blob.type || !blob.type.startsWith("image/")) {
+    throw new Error("not-image");
+  }
+  if (blob.type === "image/svg+xml" || blob.size < 350_000) return blob;
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(blob);
+  } catch {
+    return blob;
+  }
+  const max = 2048;
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+  const optimized = await new Promise((resolve) => {
+    canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85);
+  });
+  return optimized || blob;
+}
+
+const IMAGE_LS_PREFIX = "analog-clock-image:";
+
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function dataURLToBlob(dataUrl) {
+  const res = await fetch(dataUrl);
+  return res.blob();
+}
+
+async function persistImageRecord(key, record) {
+  try {
+    await idbSet(key, record);
+    try {
+      localStorage.removeItem(IMAGE_LS_PREFIX + key);
+    } catch {
+      /* ignore */
+    }
+    return;
+  } catch {
+    /* IndexedDB unavailable (e.g. some file:// contexts) */
+  }
+  try {
+    const dataUrl = await blobToDataURL(record.blob);
+    if (dataUrl.length < 4_500_000) {
+      localStorage.setItem(
+        IMAGE_LS_PREFIX + key,
+        JSON.stringify({ dataUrl, name: record.name || "", type: record.type || "" })
+      );
+    }
+  } catch {
+    /* persistence failed — in-memory URL still works this session */
+  }
+}
+
+async function loadImageRecord(key) {
+  try {
+    const record = await idbGet(key);
+    if (record?.blob instanceof Blob) return record;
+  } catch {
+    /* ignore */
+  }
+  try {
+    const raw = localStorage.getItem(IMAGE_LS_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.dataUrl) return null;
+    const blob = await dataURLToBlob(parsed.dataUrl);
+    return { blob, name: parsed.name || "", type: parsed.type || blob.type };
+  } catch {
+    return null;
+  }
+}
+
+async function removeImageRecord(key) {
+  try {
+    await idbDelete(key);
+  } catch {
+    /* ignore */
+  }
+  try {
+    localStorage.removeItem(IMAGE_LS_PREFIX + key);
+  } catch {
+    /* ignore */
+  }
+}
+
+class BackgroundImageStore {
+  constructor(root = document.documentElement) {
+    this.root = root;
+    this.urls = { bg: null, faceBg: null };
+    this.activeKey = "bg";
+  }
+
+  async hydrate() {
+    await Promise.all(IMAGE_KEYS.map((key) => this._loadKey(key)));
+    this.apply();
+  }
+
+  async _loadKey(key) {
+    const record = await loadImageRecord(key);
+    this._revoke(key);
+    if (record?.blob instanceof Blob) {
+      this.urls[key] = URL.createObjectURL(record.blob);
+    } else {
+      this.urls[key] = null;
+    }
+  }
+
+  _detachPreviews(key) {
+    document.querySelectorAll(`.bg-image[data-image-key="${key}"] .bg-image__preview`).forEach((img) => {
+      img.removeAttribute("src");
+      img.hidden = true;
+    });
+  }
+
+  _revoke(key) {
+    // Revoking while <img> still points at the blob URL shows a broken-image icon.
+    this._detachPreviews(key);
+    if (this.urls[key]) {
+      URL.revokeObjectURL(this.urls[key]);
+      this.urls[key] = null;
+    }
+  }
+
+  has(key) {
+    return Boolean(this.urls[key]);
+  }
+
+  apply() {
+    IMAGE_KEYS.forEach((key) => {
+      const { varName, flag } = IMAGE_CSS[key];
+      const url = this.urls[key];
+      if (url) {
+        this.root.style.setProperty(varName, `url("${url}")`);
+        this.root.dataset[flag] = "true";
+      } else {
+        this.root.style.removeProperty(varName);
+        delete this.root.dataset[flag];
+      }
+    });
+  }
+
+  async setFromBlob(key, blob, name = "") {
+    if (!IMAGE_KEYS.includes(key)) return;
+    const optimized = await optimizeImageBlob(blob);
+    const record = {
+      blob: optimized,
+      name: name || "",
+      type: optimized.type || blob.type || "image/*",
+      updatedAt: Date.now(),
+    };
+    await persistImageRecord(key, record);
+    this._revoke(key);
+    this.urls[key] = URL.createObjectURL(optimized);
+    this.apply();
+  }
+
+  async clear(key) {
+    if (!IMAGE_KEYS.includes(key)) return;
+    await removeImageRecord(key);
+    this._revoke(key);
+    this.apply();
+  }
+}
+
+function syncBgImageUI(store) {
+  document.querySelectorAll(".bg-image[data-image-key]").forEach((card) => {
+    const key = card.dataset.imageKey;
+    const preview = card.querySelector(".bg-image__preview");
+    const clearBtn = card.querySelector('[data-action="clear"]');
+    const has = store.has(key);
+    card.classList.toggle("has-image", has);
+    if (preview) {
+      if (has) {
+        preview.hidden = false;
+        preview.src = store.urls[key];
+      } else {
+        preview.removeAttribute("src");
+        preview.hidden = true;
+      }
+    }
+    if (clearBtn) clearBtn.hidden = !has;
+  });
+}
+
+function setActiveImageKey(store, key) {
+  store.activeKey = key;
+  document.querySelectorAll(".bg-image[data-image-key]").forEach((card) => {
+    card.classList.toggle("is-active", card.dataset.imageKey === key);
+  });
+}
+
+async function readImageFromClipboardEvent(e) {
+  const items = e.clipboardData?.items;
+  if (!items) return null;
+  for (const item of items) {
+    if (item.type.startsWith("image/")) {
+      return item.getAsFile();
+    }
+  }
+  return null;
+}
+
+async function readImageFromClipboardApi() {
+  if (!navigator.clipboard?.read) return null;
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      const type = item.types.find((t) => t.startsWith("image/"));
+      if (type) return await item.getType(type);
+    }
+  } catch {
+    /* permission denied or unsupported */
+  }
+  return null;
+}
+
+function bindBackgroundImages(store, settingsPanel) {
+  const section = document.querySelector(".settings__section--bg-images");
+  if (!section) return;
+
+  const applyBlob = async (key, blob, name) => {
+    if (!blob) return;
+    try {
+      await store.setFromBlob(key, blob, name);
+      syncBgImageUI(store);
+    } catch {
+      /* ignore invalid files */
+    }
+  };
+
+  section.querySelectorAll(".bg-image[data-image-key]").forEach((card) => {
+    const key = card.dataset.imageKey;
+    const drop = card.querySelector(".bg-image__drop");
+    const fileInput = card.querySelector(".bg-image__file");
+
+    card.addEventListener("focusin", () => setActiveImageKey(store, key));
+    card.addEventListener("pointerdown", () => setActiveImageKey(store, key));
+
+    drop?.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      setActiveImageKey(store, key);
+      fileInput?.click();
+    });
+
+    drop?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput?.click();
+      }
+    });
+
+    fileInput?.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
+      fileInput.value = "";
+      if (file) await applyBlob(key, file, file.name);
+    });
+
+    card.querySelectorAll("[data-action]").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        setActiveImageKey(store, key);
+        const action = btn.dataset.action;
+        if (action === "choose") {
+          fileInput?.click();
+        } else if (action === "clear") {
+          await store.clear(key);
+          syncBgImageUI(store);
+        } else if (action === "paste") {
+          const blob = await readImageFromClipboardApi();
+          if (blob) await applyBlob(key, blob, "clipboard");
+          else alert(t("bgImagePasteFail"));
+        }
+      });
+    });
+
+    ["dragenter", "dragover"].forEach((type) => {
+      drop?.addEventListener(type, (e) => {
+        e.preventDefault();
+        drop.classList.add("is-dragover");
+        setActiveImageKey(store, key);
+      });
+    });
+    drop?.addEventListener("dragleave", () => drop.classList.remove("is-dragover"));
+    drop?.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      drop.classList.remove("is-dragover");
+      const file = [...(e.dataTransfer?.files || [])].find((f) => f.type.startsWith("image/"));
+      if (file) await applyBlob(key, file, file.name);
+    });
+  });
+
+  window.addEventListener("paste", async (e) => {
+    if (settingsPanel?.hidden) return;
+    if (e.target?.closest?.("input, textarea, select")) return;
+    const file = await readImageFromClipboardEvent(e);
+    if (!file) return;
+    e.preventDefault();
+    await applyBlob(store.activeKey || "bg", file, "clipboard");
+  });
+}
+
 /**
  * Analog Clock — settings, fullscreen, themes
  */
-
-const STORAGE_KEY = "analog-clock-settings";
 
 /* ==========================================================================
    Internationalization (i18n)
@@ -17,15 +389,23 @@ const I18N = {
     theme: "Theme", themeClassic: "Classic", themeMidnight: "Midnight", themeDaylight: "Daylight", themeOcean: "Ocean Blue",
     themeBurgundy: "Burgundy", themeForest: "Forest", themeSunset: "Sunset", themeAmethyst: "Amethyst",
     themePaper: "Paper", themeRose: "Rose",
-    numbers: "Numbers", size: "Size", arabic: "Arabic", roman: "Roman",
+    numbers: "Numbers", size: "Size", resetSize: "Reset", arabic: "Arabic", roman: "Roman",
     clock: "Clock",
     handStyle: "Hand style", handBar: "Bar", handArrow: "Arrow", handSquare: "Square", handRounded: "Rounded",
-    faceShape: "Clock shape", faceCircle: "Circle", faceSquare: "Square",
-    faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (landscape)", faceTrapezoid: "Trapezoid",
+    secondMotion: "Second hand", secondSmooth: "Smooth", secondTick: "Tick (per second)",
+    faceShape: "Clock shape", faceCircle: "Circle", faceSquare: "Square", faceRounded: "Rounded square",
+    faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (landscape)",
+    faceOvalPortrait: "Oval (portrait)", faceOvalLandscape: "Oval (landscape)", faceStadium: "Stadium",
+    faceArch: "Arch", faceHexagon: "Hexagon", faceOctagon: "Octagon", faceDiamond: "Diamond",
+    faceTrapezoid: "Trapezoid", faceShield: "Shield",
     borderStyle: "Border style", borderSolid: "Solid", borderThin: "Thin", borderDouble: "Double",
     borderDashed: "Dashed", borderDotted: "Dotted", borderRing: "Ring", borderGlow: "Glow",
     borderRaised: "Raised", borderClassic: "Classic",
     colors: "Colors", resetColors: "Reset colors",
+    bgImages: "Background images",
+    bgImagesHint: "Choose a local file, drag & drop, or paste (Ctrl+V). Images stay on this device.",
+    bgImageChoose: "Choose image", bgImagePaste: "Paste", bgImageClear: "Clear",
+    bgImageDrop: "Click, drop, or paste", bgImagePasteFail: "No image in clipboard",
     share: "Share", copyUrl: "Copy settings URL", copied: "Copied!",
     colorBg: "Background", colorFaceBorder: "Clock border", colorFaceBg: "Clock face", colorNumber: "Numbers",
     colorMarker: "Ticks", colorMarkerMajor: "Major ticks", colorHandHour: "Hour hand",
@@ -39,15 +419,23 @@ const I18N = {
     theme: "테마", themeClassic: "클래식", themeMidnight: "미드나잇", themeDaylight: "데이라이트", themeOcean: "오션 블루",
     themeBurgundy: "버건디", themeForest: "포레스트", themeSunset: "선셋", themeAmethyst: "자수정",
     themePaper: "페이퍼", themeRose: "로즈",
-    numbers: "숫자", size: "크기", arabic: "아라비아", roman: "로마",
+    numbers: "숫자", size: "크기", resetSize: "초기화", arabic: "아라비아", roman: "로마",
     clock: "시계",
     handStyle: "바늘 모양", handBar: "막대형", handArrow: "화살표형", handSquare: "네모형", handRounded: "둥근형",
-    faceShape: "시계 모양", faceCircle: "원형", faceSquare: "정사각형",
-    faceRectPortrait: "직사각형 (세로)", faceRectLandscape: "직사각형 (가로)", faceTrapezoid: "사다리꼴",
+    secondMotion: "초침", secondSmooth: "부드럽게", secondTick: "초마다 끊어서",
+    faceShape: "시계 모양", faceCircle: "원형", faceSquare: "정사각형", faceRounded: "둥근 사각형",
+    faceRectPortrait: "직사각형 (세로)", faceRectLandscape: "직사각형 (가로)",
+    faceOvalPortrait: "타원 (세로)", faceOvalLandscape: "타원 (가로)", faceStadium: "스타디움",
+    faceArch: "아치", faceHexagon: "육각형", faceOctagon: "팔각형", faceDiamond: "다이아몬드",
+    faceTrapezoid: "사다리꼴", faceShield: "방패",
     borderStyle: "테두리 스타일", borderSolid: "실선", borderThin: "가는 실선", borderDouble: "이중선",
     borderDashed: "파선", borderDotted: "점선", borderRing: "링", borderGlow: "글로우",
     borderRaised: "입체", borderClassic: "클래식",
     colors: "색상", resetColors: "색상 초기화",
+    bgImages: "배경 이미지",
+    bgImagesHint: "로컬 파일 선택, 드래그 앤 드롭, 또는 붙여넣기(Ctrl+V).",
+    bgImageChoose: "이미지 선택", bgImagePaste: "붙여넣기", bgImageClear: "지우기",
+    bgImageDrop: "클릭 · 드롭 · 붙여넣기", bgImagePasteFail: "클립보드에 이미지가 없습니다",
     share: "공유", copyUrl: "설정 URL 복사", copied: "복사됨!",
     colorBg: "화면 배경", colorFaceBorder: "시계 테두리", colorFaceBg: "시계 배경", colorNumber: "숫자",
     colorMarker: "눈금", colorMarkerMajor: "주 눈금", colorHandHour: "시침",
@@ -61,15 +449,23 @@ const I18N = {
     theme: "テーマ", themeClassic: "クラシック", themeMidnight: "ミッドナイト", themeDaylight: "デイライト", themeOcean: "オーシャンブルー",
     themeBurgundy: "バーガンディ", themeForest: "フォレスト", themeSunset: "サンセット", themeAmethyst: "アメジスト",
     themePaper: "ペーパー", themeRose: "ローズ",
-    numbers: "数字", size: "サイズ", arabic: "アラビア数字", roman: "ローマ数字",
+    numbers: "数字", size: "サイズ", resetSize: "リセット", arabic: "アラビア数字", roman: "ローマ数字",
     clock: "時計",
     handStyle: "針の形", handBar: "バー", handArrow: "矢印", handSquare: "四角", handRounded: "丸み",
-    faceShape: "文字盤の形", faceCircle: "円形", faceSquare: "正方形",
-    faceRectPortrait: "長方形（縦）", faceRectLandscape: "長方形（横）", faceTrapezoid: "台形",
+    secondMotion: "秒針", secondSmooth: "スムーズ", secondTick: "秒ごとに刻む",
+    faceShape: "文字盤の形", faceCircle: "円形", faceSquare: "正方形", faceRounded: "角丸四角",
+    faceRectPortrait: "長方形（縦）", faceRectLandscape: "長方形（横）",
+    faceOvalPortrait: "楕円（縦）", faceOvalLandscape: "楕円（横）", faceStadium: "スタジアム",
+    faceArch: "アーチ", faceHexagon: "六角形", faceOctagon: "八角形", faceDiamond: "ダイヤモンド",
+    faceTrapezoid: "台形", faceShield: "シールド",
     borderStyle: "枠線スタイル", borderSolid: "実線", borderThin: "細線", borderDouble: "二重線",
     borderDashed: "破線", borderDotted: "点線", borderRing: "リング", borderGlow: "グロー",
     borderRaised: "立体", borderClassic: "クラシック",
     colors: "色", resetColors: "色をリセット",
+    bgImages: "背景画像",
+    bgImagesHint: "ローカルファイルの選択、ドラッグ＆ドロップ、または貼り付け（Ctrl+V）。画像はこの端末にのみ保存されます。",
+    bgImageChoose: "画像を選択", bgImagePaste: "貼り付け", bgImageClear: "クリア",
+    bgImageDrop: "クリック・ドロップ・貼付", bgImagePasteFail: "クリップボードに画像がありません",
     share: "共有", copyUrl: "設定URLをコピー", copied: "コピーしました！",
     colorBg: "背景", colorFaceBorder: "時計の枠", colorFaceBg: "文字盤", colorNumber: "数字",
     colorMarker: "目盛り", colorMarkerMajor: "主目盛り", colorHandHour: "時針",
@@ -83,15 +479,23 @@ const I18N = {
     theme: "主题", themeClassic: "经典", themeMidnight: "午夜", themeDaylight: "日光", themeOcean: "海洋蓝",
     themeBurgundy: "勃艮第红", themeForest: "森林", themeSunset: "日落", themeAmethyst: "紫水晶",
     themePaper: "纸张", themeRose: "玫瑰",
-    numbers: "数字", size: "大小", arabic: "阿拉伯数字", roman: "罗马数字",
+    numbers: "数字", size: "大小", resetSize: "重置", arabic: "阿拉伯数字", roman: "罗马数字",
     clock: "时钟",
     handStyle: "指针样式", handBar: "条形", handArrow: "箭头", handSquare: "方形", handRounded: "圆角",
-    faceShape: "表盘形状", faceCircle: "圆形", faceSquare: "正方形",
-    faceRectPortrait: "矩形（竖向）", faceRectLandscape: "矩形（横向）", faceTrapezoid: "梯形",
+    secondMotion: "秒针", secondSmooth: "平滑", secondTick: "每秒跳动",
+    faceShape: "表盘形状", faceCircle: "圆形", faceSquare: "正方形", faceRounded: "圆角方形",
+    faceRectPortrait: "矩形（竖向）", faceRectLandscape: "矩形（横向）",
+    faceOvalPortrait: "椭圆（竖向）", faceOvalLandscape: "椭圆（横向）", faceStadium: "胶囊形",
+    faceArch: "拱形", faceHexagon: "六边形", faceOctagon: "八边形", faceDiamond: "菱形",
+    faceTrapezoid: "梯形", faceShield: "盾形",
     borderStyle: "边框样式", borderSolid: "实线", borderThin: "细线", borderDouble: "双线",
     borderDashed: "虚线", borderDotted: "点线", borderRing: "环形", borderGlow: "发光",
     borderRaised: "立体", borderClassic: "经典",
     colors: "颜色", resetColors: "重置颜色",
+    bgImages: "背景图片",
+    bgImagesHint: "选择本地文件、拖放，或粘贴（Ctrl+V）。图片仅保存在本设备。",
+    bgImageChoose: "选择图片", bgImagePaste: "粘贴", bgImageClear: "清除",
+    bgImageDrop: "点击、拖放或粘贴", bgImagePasteFail: "剪贴板中没有图片",
     share: "分享", copyUrl: "复制设置链接", copied: "已复制！",
     colorBg: "背景", colorFaceBorder: "表盘边框", colorFaceBg: "表盘", colorNumber: "数字",
     colorMarker: "刻度", colorMarkerMajor: "主刻度", colorHandHour: "时针",
@@ -105,15 +509,23 @@ const I18N = {
     theme: "Tema", themeClassic: "Clásico", themeMidnight: "Medianoche", themeDaylight: "Luz de día", themeOcean: "Azul océano",
     themeBurgundy: "Borgoña", themeForest: "Bosque", themeSunset: "Atardecer", themeAmethyst: "Amatista",
     themePaper: "Papel", themeRose: "Rosa",
-    numbers: "Números", size: "Tamaño", arabic: "Arábigos", roman: "Romanos",
+    numbers: "Números", size: "Tamaño", resetSize: "Restablecer", arabic: "Arábigos", roman: "Romanos",
     clock: "Reloj",
     handStyle: "Estilo de aguja", handBar: "Barra", handArrow: "Flecha", handSquare: "Cuadrado", handRounded: "Redondeado",
-    faceShape: "Forma del reloj", faceCircle: "Círculo", faceSquare: "Cuadrado",
-    faceRectPortrait: "Rectángulo (vertical)", faceRectLandscape: "Rectángulo (horizontal)", faceTrapezoid: "Trapecio",
+    secondMotion: "Segundero", secondSmooth: "Suave", secondTick: "A saltos (por segundo)",
+    faceShape: "Forma del reloj", faceCircle: "Círculo", faceSquare: "Cuadrado", faceRounded: "Cuadrado redondeado",
+    faceRectPortrait: "Rectángulo (vertical)", faceRectLandscape: "Rectángulo (horizontal)",
+    faceOvalPortrait: "Óvalo (vertical)", faceOvalLandscape: "Óvalo (horizontal)", faceStadium: "Estadio",
+    faceArch: "Arco", faceHexagon: "Hexágono", faceOctagon: "Octágono", faceDiamond: "Diamante",
+    faceTrapezoid: "Trapecio", faceShield: "Escudo",
     borderStyle: "Estilo de borde", borderSolid: "Sólido", borderThin: "Fino", borderDouble: "Doble",
     borderDashed: "Discontinuo", borderDotted: "Punteado", borderRing: "Anillo", borderGlow: "Resplandor",
     borderRaised: "Relieve", borderClassic: "Clásico",
     colors: "Colores", resetColors: "Restablecer colores",
+    bgImages: "Imágenes de fondo",
+    bgImagesHint: "Elige un archivo local, arrastra y suelta, o pega (Ctrl+V). Las imágenes se quedan en este dispositivo.",
+    bgImageChoose: "Elegir imagen", bgImagePaste: "Pegar", bgImageClear: "Quitar",
+    bgImageDrop: "Clic, soltar o pegar", bgImagePasteFail: "No hay imagen en el portapapeles",
     share: "Compartir", copyUrl: "Copiar URL de ajustes", copied: "¡Copiado!",
     colorBg: "Fondo", colorFaceBorder: "Borde del reloj", colorFaceBg: "Esfera", colorNumber: "Números",
     colorMarker: "Marcas", colorMarkerMajor: "Marcas principales", colorHandHour: "Aguja de hora",
@@ -127,15 +539,23 @@ const I18N = {
     theme: "Thème", themeClassic: "Classique", themeMidnight: "Minuit", themeDaylight: "Lumière du jour", themeOcean: "Bleu océan",
     themeBurgundy: "Bordeaux", themeForest: "Forêt", themeSunset: "Coucher de soleil", themeAmethyst: "Améthyste",
     themePaper: "Papier", themeRose: "Rose",
-    numbers: "Chiffres", size: "Taille", arabic: "Arabes", roman: "Romains",
+    numbers: "Chiffres", size: "Taille", resetSize: "Réinitialiser", arabic: "Arabes", roman: "Romains",
     clock: "Horloge",
     handStyle: "Style d'aiguille", handBar: "Barre", handArrow: "Flèche", handSquare: "Carré", handRounded: "Arrondi",
-    faceShape: "Forme de l'horloge", faceCircle: "Cercle", faceSquare: "Carré",
-    faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (paysage)", faceTrapezoid: "Trapèze",
+    secondMotion: "Aiguille des secondes", secondSmooth: "Fluide", secondTick: "Par à-coups (chaque seconde)",
+    faceShape: "Forme de l'horloge", faceCircle: "Cercle", faceSquare: "Carré", faceRounded: "Carré arrondi",
+    faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (paysage)",
+    faceOvalPortrait: "Ovale (portrait)", faceOvalLandscape: "Ovale (paysage)", faceStadium: "Stade",
+    faceArch: "Arche", faceHexagon: "Hexagone", faceOctagon: "Octogone", faceDiamond: "Losange",
+    faceTrapezoid: "Trapèze", faceShield: "Bouclier",
     borderStyle: "Style de bordure", borderSolid: "Plein", borderThin: "Fin", borderDouble: "Double",
     borderDashed: "Tirets", borderDotted: "Pointillés", borderRing: "Anneau", borderGlow: "Lueur",
     borderRaised: "Relief", borderClassic: "Classique",
     colors: "Couleurs", resetColors: "Réinitialiser les couleurs",
+    bgImages: "Images d'arrière-plan",
+    bgImagesHint: "Choisissez un fichier local, glissez-déposez, ou collez (Ctrl+V). Les images restent sur cet appareil.",
+    bgImageChoose: "Choisir une image", bgImagePaste: "Coller", bgImageClear: "Effacer",
+    bgImageDrop: "Cliquer, déposer ou coller", bgImagePasteFail: "Pas d'image dans le presse-papiers",
     share: "Partager", copyUrl: "Copier l'URL des réglages", copied: "Copié !",
     colorBg: "Arrière-plan", colorFaceBorder: "Bordure de l'horloge", colorFaceBg: "Cadran", colorNumber: "Chiffres",
     colorMarker: "Graduations", colorMarkerMajor: "Graduations principales", colorHandHour: "Aiguille des heures",
@@ -149,15 +569,23 @@ const I18N = {
     theme: "Thema", themeClassic: "Klassisch", themeMidnight: "Mitternacht", themeDaylight: "Tageslicht", themeOcean: "Ozeanblau",
     themeBurgundy: "Bordeaux", themeForest: "Wald", themeSunset: "Sonnenuntergang", themeAmethyst: "Amethyst",
     themePaper: "Papier", themeRose: "Rosé",
-    numbers: "Zahlen", size: "Größe", arabic: "Arabisch", roman: "Römisch",
+    numbers: "Zahlen", size: "Größe", resetSize: "Zurücksetzen", arabic: "Arabisch", roman: "Römisch",
     clock: "Uhr",
     handStyle: "Zeigerstil", handBar: "Balken", handArrow: "Pfeil", handSquare: "Eckig", handRounded: "Abgerundet",
-    faceShape: "Uhrform", faceCircle: "Kreis", faceSquare: "Quadrat",
-    faceRectPortrait: "Rechteck (hoch)", faceRectLandscape: "Rechteck (quer)", faceTrapezoid: "Trapez",
+    secondMotion: "Sekundenzeiger", secondSmooth: "Fließend", secondTick: "Taktend (pro Sekunde)",
+    faceShape: "Uhrform", faceCircle: "Kreis", faceSquare: "Quadrat", faceRounded: "Abgerundetes Quadrat",
+    faceRectPortrait: "Rechteck (hoch)", faceRectLandscape: "Rechteck (quer)",
+    faceOvalPortrait: "Oval (hoch)", faceOvalLandscape: "Oval (quer)", faceStadium: "Stadion",
+    faceArch: "Bogen", faceHexagon: "Sechseck", faceOctagon: "Achteck", faceDiamond: "Raute",
+    faceTrapezoid: "Trapez", faceShield: "Schild",
     borderStyle: "Rahmenstil", borderSolid: "Durchgezogen", borderThin: "Dünn", borderDouble: "Doppelt",
     borderDashed: "Gestrichelt", borderDotted: "Gepunktet", borderRing: "Ring", borderGlow: "Leuchten",
     borderRaised: "Erhaben", borderClassic: "Klassisch",
     colors: "Farben", resetColors: "Farben zurücksetzen",
+    bgImages: "Hintergrundbilder",
+    bgImagesHint: "Lokale Datei wählen, per Drag & Drop oder Einfügen (Strg+V). Bilder bleiben auf diesem Gerät.",
+    bgImageChoose: "Bild wählen", bgImagePaste: "Einfügen", bgImageClear: "Entfernen",
+    bgImageDrop: "Klicken, ablegen oder einfügen", bgImagePasteFail: "Kein Bild in der Zwischenablage",
     share: "Teilen", copyUrl: "Einstellungs-URL kopieren", copied: "Kopiert!",
     colorBg: "Hintergrund", colorFaceBorder: "Uhrenrand", colorFaceBg: "Zifferblatt", colorNumber: "Zahlen",
     colorMarker: "Markierungen", colorMarkerMajor: "Hauptmarkierungen", colorHandHour: "Stundenzeiger",
@@ -171,15 +599,23 @@ const I18N = {
     theme: "Tema", themeClassic: "Classico", themeMidnight: "Mezzanotte", themeDaylight: "Luce del giorno", themeOcean: "Blu oceano",
     themeBurgundy: "Bordeaux", themeForest: "Foresta", themeSunset: "Tramonto", themeAmethyst: "Ametista",
     themePaper: "Carta", themeRose: "Rosa",
-    numbers: "Numeri", size: "Dimensione", arabic: "Arabi", roman: "Romani",
+    numbers: "Numeri", size: "Dimensione", resetSize: "Reimposta", arabic: "Arabi", roman: "Romani",
     clock: "Orologio",
     handStyle: "Stile lancette", handBar: "Barra", handArrow: "Freccia", handSquare: "Quadrato", handRounded: "Arrotondato",
-    faceShape: "Forma orologio", faceCircle: "Cerchio", faceSquare: "Quadrato",
-    faceRectPortrait: "Rettangolo (verticale)", faceRectLandscape: "Rettangolo (orizzontale)", faceTrapezoid: "Trapezio",
+    secondMotion: "Lancetta dei secondi", secondSmooth: "Fluida", secondTick: "A scatti (al secondo)",
+    faceShape: "Forma orologio", faceCircle: "Cerchio", faceSquare: "Quadrato", faceRounded: "Quadrato arrotondato",
+    faceRectPortrait: "Rettangolo (verticale)", faceRectLandscape: "Rettangolo (orizzontale)",
+    faceOvalPortrait: "Ovale (verticale)", faceOvalLandscape: "Ovale (orizzontale)", faceStadium: "Stadio",
+    faceArch: "Arco", faceHexagon: "Esagono", faceOctagon: "Ottagono", faceDiamond: "Diamante",
+    faceTrapezoid: "Trapezio", faceShield: "Scudo",
     borderStyle: "Stile bordo", borderSolid: "Continuo", borderThin: "Sottile", borderDouble: "Doppio",
     borderDashed: "Tratteggiato", borderDotted: "Punteggiato", borderRing: "Anello", borderGlow: "Bagliore",
     borderRaised: "Rilievo", borderClassic: "Classico",
     colors: "Colori", resetColors: "Reimposta colori",
+    bgImages: "Immagini di sfondo",
+    bgImagesHint: "Scegli un file locale, trascina, o incolla (Ctrl+V). Le immagini restano su questo dispositivo.",
+    bgImageChoose: "Scegli immagine", bgImagePaste: "Incolla", bgImageClear: "Rimuovi",
+    bgImageDrop: "Clic, rilascia o incolla", bgImagePasteFail: "Nessuna immagine negli appunti",
     share: "Condividi", copyUrl: "Copia URL impostazioni", copied: "Copiato!",
     colorBg: "Sfondo", colorFaceBorder: "Bordo orologio", colorFaceBg: "Quadrante", colorNumber: "Numeri",
     colorMarker: "Tacche", colorMarkerMajor: "Tacche principali", colorHandHour: "Lancetta ore",
@@ -193,15 +629,23 @@ const I18N = {
     theme: "Tema", themeClassic: "Clássico", themeMidnight: "Meia-noite", themeDaylight: "Luz do dia", themeOcean: "Azul oceano",
     themeBurgundy: "Borgonha", themeForest: "Floresta", themeSunset: "Pôr do sol", themeAmethyst: "Ametista",
     themePaper: "Papel", themeRose: "Rosa",
-    numbers: "Números", size: "Tamanho", arabic: "Arábicos", roman: "Romanos",
+    numbers: "Números", size: "Tamanho", resetSize: "Redefinir", arabic: "Arábicos", roman: "Romanos",
     clock: "Relógio",
     handStyle: "Estilo do ponteiro", handBar: "Barra", handArrow: "Seta", handSquare: "Quadrado", handRounded: "Arredondado",
-    faceShape: "Forma do relógio", faceCircle: "Círculo", faceSquare: "Quadrado",
-    faceRectPortrait: "Retângulo (vertical)", faceRectLandscape: "Retângulo (horizontal)", faceTrapezoid: "Trapézio",
+    secondMotion: "Ponteiro dos segundos", secondSmooth: "Suave", secondTick: "Em ticks (por segundo)",
+    faceShape: "Forma do relógio", faceCircle: "Círculo", faceSquare: "Quadrado", faceRounded: "Quadrado arredondado",
+    faceRectPortrait: "Retângulo (vertical)", faceRectLandscape: "Retângulo (horizontal)",
+    faceOvalPortrait: "Oval (vertical)", faceOvalLandscape: "Oval (horizontal)", faceStadium: "Estádio",
+    faceArch: "Arco", faceHexagon: "Hexágono", faceOctagon: "Octógono", faceDiamond: "Diamante",
+    faceTrapezoid: "Trapézio", faceShield: "Escudo",
     borderStyle: "Estilo da borda", borderSolid: "Sólida", borderThin: "Fina", borderDouble: "Dupla",
     borderDashed: "Tracejada", borderDotted: "Pontilhada", borderRing: "Anel", borderGlow: "Brilho",
     borderRaised: "Relevo", borderClassic: "Clássico",
     colors: "Cores", resetColors: "Redefinir cores",
+    bgImages: "Imagens de fundo",
+    bgImagesHint: "Escolha um arquivo local, arraste e solte, ou cole (Ctrl+V). As imagens ficam neste dispositivo.",
+    bgImageChoose: "Escolher imagem", bgImagePaste: "Colar", bgImageClear: "Limpar",
+    bgImageDrop: "Clique, solte ou cole", bgImagePasteFail: "Nenhuma imagem na área de transferência",
     share: "Compartilhar", copyUrl: "Copiar URL das configurações", copied: "Copiado!",
     colorBg: "Fundo", colorFaceBorder: "Borda do relógio", colorFaceBg: "Mostrador", colorNumber: "Números",
     colorMarker: "Marcas", colorMarkerMajor: "Marcas principais", colorHandHour: "Ponteiro das horas",
@@ -215,15 +659,23 @@ const I18N = {
     theme: "Тема", themeClassic: "Классика", themeMidnight: "Полночь", themeDaylight: "Дневной свет", themeOcean: "Океан",
     themeBurgundy: "Бордовый", themeForest: "Лес", themeSunset: "Закат", themeAmethyst: "Аметист",
     themePaper: "Бумага", themeRose: "Роза",
-    numbers: "Цифры", size: "Размер", arabic: "Арабские", roman: "Римские",
+    numbers: "Цифры", size: "Размер", resetSize: "Сбросить", arabic: "Арабские", roman: "Римские",
     clock: "Часы",
     handStyle: "Стиль стрелок", handBar: "Полоса", handArrow: "Стрелка", handSquare: "Квадрат", handRounded: "Скругление",
-    faceShape: "Форма часов", faceCircle: "Круг", faceSquare: "Квадрат",
-    faceRectPortrait: "Прямоугольник (верт.)", faceRectLandscape: "Прямоугольник (гориз.)", faceTrapezoid: "Трапеция",
+    secondMotion: "Секундная стрелка", secondSmooth: "Плавно", secondTick: "Рывками (каждую секунду)",
+    faceShape: "Форма часов", faceCircle: "Круг", faceSquare: "Квадрат", faceRounded: "Скруглённый квадрат",
+    faceRectPortrait: "Прямоугольник (верт.)", faceRectLandscape: "Прямоугольник (гориз.)",
+    faceOvalPortrait: "Овал (верт.)", faceOvalLandscape: "Овал (гориз.)", faceStadium: "Стадион",
+    faceArch: "Арка", faceHexagon: "Шестиугольник", faceOctagon: "Восьмиугольник", faceDiamond: "Ромб",
+    faceTrapezoid: "Трапеция", faceShield: "Щит",
     borderStyle: "Стиль рамки", borderSolid: "Сплошная", borderThin: "Тонкая", borderDouble: "Двойная",
     borderDashed: "Штриховая", borderDotted: "Пунктир", borderRing: "Кольцо", borderGlow: "Свечение",
     borderRaised: "Объёмная", borderClassic: "Классика",
     colors: "Цвета", resetColors: "Сбросить цвета",
+    bgImages: "Фоновые изображения",
+    bgImagesHint: "Выберите локальный файл, перетащите или вставьте (Ctrl+V). Изображения хранятся на этом устройстве.",
+    bgImageChoose: "Выбрать изображение", bgImagePaste: "Вставить", bgImageClear: "Удалить",
+    bgImageDrop: "Клик, перетаскивание или вставка", bgImagePasteFail: "В буфере обмена нет изображения",
     share: "Поделиться", copyUrl: "Копировать URL настроек", copied: "Скопировано!",
     colorBg: "Фон", colorFaceBorder: "Рамка часов", colorFaceBg: "Циферблат", colorNumber: "Цифры",
     colorMarker: "Метки", colorMarkerMajor: "Основные метки", colorHandHour: "Часовая стрелка",
@@ -237,15 +689,23 @@ const I18N = {
     theme: "थीम", themeClassic: "क्लासिक", themeMidnight: "मध्यरात्रि", themeDaylight: "दिन का उजाला", themeOcean: "समुद्री नीला",
     themeBurgundy: "बरगंडी", themeForest: "वन", themeSunset: "सूर्यास्त", themeAmethyst: "नीलम",
     themePaper: "कागज़", themeRose: "गुलाबी",
-    numbers: "अंक", size: "आकार", arabic: "अरबी", roman: "रोमन",
+    numbers: "अंक", size: "आकार", resetSize: "रीसेट", arabic: "अरबी", roman: "रोमन",
     clock: "घड़ी",
     handStyle: "सुई का प्रकार", handBar: "पट्टी", handArrow: "तीर", handSquare: "चौकोर", handRounded: "गोल",
-    faceShape: "घड़ी का आकार", faceCircle: "वृत्त", faceSquare: "वर्ग",
-    faceRectPortrait: "आयत (खड़ा)", faceRectLandscape: "आयत (चौड़ा)", faceTrapezoid: "समलम्ब",
+    secondMotion: "सेकंड सुई", secondSmooth: "स्मूद", secondTick: "टिक (प्रति सेकंड)",
+    faceShape: "घड़ी का आकार", faceCircle: "वृत्त", faceSquare: "वर्ग", faceRounded: "गोल वर्ग",
+    faceRectPortrait: "आयत (खड़ा)", faceRectLandscape: "आयत (चौड़ा)",
+    faceOvalPortrait: "अंडाकार (खड़ा)", faceOvalLandscape: "अंडाकार (चौड़ा)", faceStadium: "स्टेडियम",
+    faceArch: "मेहराब", faceHexagon: "षट्कोण", faceOctagon: "अष्टकोण", faceDiamond: "हीरा",
+    faceTrapezoid: "समलम्ब", faceShield: "ढाल",
     borderStyle: "किनारा शैली", borderSolid: "ठोस", borderThin: "पतला", borderDouble: "दोहरा",
     borderDashed: "धराशायी", borderDotted: "बिंदुदार", borderRing: "वलय", borderGlow: "चमक",
     borderRaised: "उभरा", borderClassic: "क्लासिक",
     colors: "रंग", resetColors: "रंग रीसेट करें",
+    bgImages: "पृष्ठभूमि चित्र",
+    bgImagesHint: "स्थानीय फ़ाइल चुनें, ड्रैग और ड्रॉप करें, या पेस्ट करें (Ctrl+V)। चित्र इसी डिवाइस पर रहेंगे।",
+    bgImageChoose: "चित्र चुनें", bgImagePaste: "पेस्ट", bgImageClear: "हटाएँ",
+    bgImageDrop: "क्लिक, ड्रॉप या पेस्ट", bgImagePasteFail: "क्लिपबोर्ड में चित्र नहीं है",
     share: "साझा करें", copyUrl: "सेटिंग्स URL कॉपी करें", copied: "कॉपी किया गया!",
     colorBg: "पृष्ठभूमि", colorFaceBorder: "घड़ी का किनारा", colorFaceBg: "डायल", colorNumber: "अंक",
     colorMarker: "निशान", colorMarkerMajor: "मुख्य निशान", colorHandHour: "घंटा सुई",
@@ -259,15 +719,23 @@ const I18N = {
     theme: "السمة", themeClassic: "كلاسيكي", themeMidnight: "منتصف الليل", themeDaylight: "ضوء النهار", themeOcean: "أزرق محيطي",
     themeBurgundy: "عنابي", themeForest: "غابة", themeSunset: "غروب", themeAmethyst: "جمشت",
     themePaper: "ورقي", themeRose: "وردي",
-    numbers: "الأرقام", size: "الحجم", arabic: "عربية", roman: "رومانية",
+    numbers: "الأرقام", size: "الحجم", resetSize: "إعادة تعيين", arabic: "عربية", roman: "رومانية",
     clock: "الساعة",
     handStyle: "شكل العقارب", handBar: "شريط", handArrow: "سهم", handSquare: "مربع", handRounded: "دائري",
-    faceShape: "شكل الساعة", faceCircle: "دائرة", faceSquare: "مربع",
-    faceRectPortrait: "مستطيل (عمودي)", faceRectLandscape: "مستطيل (أفقي)", faceTrapezoid: "شبه منحرف",
+    secondMotion: "عقرب الثواني", secondSmooth: "سلس", secondTick: "نقرة كل ثانية",
+    faceShape: "شكل الساعة", faceCircle: "دائرة", faceSquare: "مربع", faceRounded: "مربع مستدير",
+    faceRectPortrait: "مستطيل (عمودي)", faceRectLandscape: "مستطيل (أفقي)",
+    faceOvalPortrait: "بيضاوي (عمودي)", faceOvalLandscape: "بيضاوي (أفقي)", faceStadium: "ملعب",
+    faceArch: "قوس", faceHexagon: "سداسي", faceOctagon: "ثماني", faceDiamond: "ماسة",
+    faceTrapezoid: "شبه منحرف", faceShield: "درع",
     borderStyle: "نمط الحدود", borderSolid: "خط متصل", borderThin: "خط رفيع", borderDouble: "خط مزدوج",
     borderDashed: "خط متقطع", borderDotted: "خط منقّط", borderRing: "حلقة", borderGlow: "توهج",
     borderRaised: "بارز", borderClassic: "كلاسيكي",
     colors: "الألوان", resetColors: "إعادة تعيين الألوان",
+    bgImages: "صور الخلفية",
+    bgImagesHint: "اختر ملفًا محليًا أو اسحب وأفلت أو الصق (Ctrl+V). تُحفظ الصور على هذا الجهاز فقط.",
+    bgImageChoose: "اختر صورة", bgImagePaste: "لصق", bgImageClear: "مسح",
+    bgImageDrop: "انقر أو أفلت أو الصق", bgImagePasteFail: "لا توجد صورة في الحافظة",
     share: "مشاركة", copyUrl: "نسخ رابط الإعدادات", copied: "تم النسخ!",
     colorBg: "الخلفية", colorFaceBorder: "إطار الساعة", colorFaceBg: "وجه الساعة", colorNumber: "الأرقام",
     colorMarker: "العلامات", colorMarkerMajor: "العلامات الرئيسية", colorHandHour: "عقرب الساعات",
@@ -484,13 +952,21 @@ const DEFAULT_SETTINGS = {
   theme: "classic",
   colorMode: "dark",
   numberSize: 1,
-  clockSize: 1,
+  clockSize: 0.75,
   numeral: "arabic",
   handStyle: "bar",
+  secondMotion: "smooth",
   faceShape: "circle",
   borderStyle: "solid",
   colors: { ...PALETTES.dark, hubRing: PALETTES.dark.hubRing },
 };
+
+const FACE_SHAPES = new Set([
+  "circle", "square", "rounded",
+  "rect-portrait", "rect-landscape",
+  "oval-portrait", "oval-landscape", "stadium", "arch",
+  "hexagon", "octagon", "diamond", "trapezoid", "shield",
+]);
 
 function cloneDefaults() {
   return {
@@ -526,11 +1002,16 @@ function normalizeSettings(saved) {
   else if (themeKey === "daylight") { themeKey = "classic"; mode = "light"; }
   if (!THEMES[themeKey]) themeKey = "classic";
   const palette = themePalette(themeKey, mode);
+  const faceShape = FACE_SHAPES.has(src.faceShape) ? src.faceShape : "circle";
+  const secondMotion = src.secondMotion === "tick" ? "tick" : "smooth";
   return {
     ...cloneDefaults(),
     ...src,
     theme: themeKey,
     colorMode: mode,
+    faceShape,
+    secondMotion,
+    clockSize: clampClockSize(src.clockSize ?? cloneDefaults().clockSize),
     colors: { ...palette, ...(src.colors || {}) },
   };
 }
@@ -569,6 +1050,7 @@ function buildShareUrl(settings) {
     clockSize: settings.clockSize,
     numeral: settings.numeral,
     handStyle: settings.handStyle,
+    secondMotion: settings.secondMotion,
     faceShape: settings.faceShape,
     borderStyle: settings.borderStyle,
     colors: settings.colors,
@@ -617,6 +1099,7 @@ class SettingsManager {
     const s = this.settings;
     this.root.dataset.colorMode = s.colorMode;
     this.root.dataset.handStyle = s.handStyle;
+    this.root.dataset.secondMotion = s.secondMotion === "tick" ? "tick" : "smooth";
     this.root.dataset.faceShape = s.faceShape;
     this.root.dataset.borderStyle = s.borderStyle;
     this.root.dataset.numeral = s.numeral;
@@ -711,13 +1194,20 @@ class AnalogClock {
     this.minuteHand = root.querySelector(".hand--minute");
     this.secondHand = root.querySelector(".hand--second");
     this._rafId = null;
+    this._intervalId = null;
     this._running = false;
+    this.secondMotion = "smooth";
   }
 
-  static getAngles(date = new Date()) {
+  setSecondMotion(mode) {
+    this.secondMotion = mode === "tick" ? "tick" : "smooth";
+  }
+
+  static getAngles(date = new Date(), secondMotion = "smooth") {
     const ms = date.getMilliseconds();
-    const s = date.getSeconds() + ms / 1000;
-    const m = date.getMinutes() + s / 60;
+    const continuous = date.getSeconds() + ms / 1000;
+    const s = secondMotion === "tick" ? date.getSeconds() : continuous;
+    const m = date.getMinutes() + continuous / 60;
     const h = (date.getHours() % 12) + m / 60;
     return { hour: h * 30, minute: m * 6, second: s * 6 };
   }
@@ -728,7 +1218,7 @@ class AnalogClock {
   }
 
   tick() {
-    const { hour, minute, second } = AnalogClock.getAngles();
+    const { hour, minute, second } = AnalogClock.getAngles(new Date(), this.secondMotion);
     this.setHandRotation(this.hourHand, hour);
     this.setHandRotation(this.minuteHand, minute);
     this.setHandRotation(this.secondHand, second);
@@ -742,6 +1232,7 @@ class AnalogClock {
       this._rafId = requestAnimationFrame(loop);
     };
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      this.setSecondMotion("tick");
       this.tick();
       this._intervalId = setInterval(() => this.tick(), 1000);
     } else {
@@ -845,6 +1336,7 @@ function bindSettingsUI(settingsMgr) {
   const themeNameEl = document.getElementById("theme-select-name");
   const themeList = document.getElementById("theme-select-list");
   const handSelect = document.getElementById("set-hand-style");
+  const secondMotionSelect = document.getElementById("set-second-motion");
   const faceSelect = document.getElementById("set-face-shape");
   const borderSelect = document.getElementById("set-border-style");
   const colorContainer = document.getElementById("color-inputs");
@@ -880,6 +1372,8 @@ function bindSettingsUI(settingsMgr) {
   buildThemeList(themeList, settingsMgr.settings.theme, settingsMgr.settings.colorMode);
   updateThemeTrigger(settingsMgr.settings.theme);
   const btnResetColors = document.getElementById("btn-reset-colors");
+  const btnResetNumberSize = document.getElementById("btn-reset-number-size");
+  const btnResetClockSize = document.getElementById("btn-reset-clock-size");
   const btnCopyUrl = document.getElementById("btn-copy-url");
   const shareUrlInput = document.getElementById("share-url");
 
@@ -920,6 +1414,20 @@ function bindSettingsUI(settingsMgr) {
 
   clockSlider?.addEventListener("input", () => {
     const v = Number(clockSlider.value);
+    if (outClockSize) outClockSize.textContent = `${Math.round(v * 100)}%`;
+    settingsMgr.set({ clockSize: v });
+  });
+
+  btnResetNumberSize?.addEventListener("click", () => {
+    const v = DEFAULT_SETTINGS.numberSize;
+    if (slider) slider.value = String(v);
+    if (outSize) outSize.textContent = `${Math.round(v * 100)}%`;
+    settingsMgr.set({ numberSize: v });
+  });
+
+  btnResetClockSize?.addEventListener("click", () => {
+    const v = DEFAULT_SETTINGS.clockSize;
+    if (clockSlider) clockSlider.value = String(v);
     if (outClockSize) outClockSize.textContent = `${Math.round(v * 100)}%`;
     settingsMgr.set({ clockSize: v });
   });
@@ -971,6 +1479,10 @@ function bindSettingsUI(settingsMgr) {
 
   handSelect?.addEventListener("change", () => {
     settingsMgr.set({ handStyle: handSelect.value });
+  });
+
+  secondMotionSelect?.addEventListener("change", () => {
+    settingsMgr.set({ secondMotion: secondMotionSelect.value });
   });
 
   faceSelect?.addEventListener("change", () => {
@@ -1038,6 +1550,7 @@ function bindSettingsUI(settingsMgr) {
     if (languageSelect) languageSelect.value = s.language;
     updateThemeTrigger(s.theme);
     if (handSelect) handSelect.value = s.handStyle;
+    if (secondMotionSelect) secondMotionSelect.value = s.secondMotion === "tick" ? "tick" : "smooth";
     if (faceSelect) faceSelect.value = s.faceShape;
     if (borderSelect) borderSelect.value = s.borderStyle;
     syncColorModeButton(btnColorMode, s.colorMode);
@@ -1058,8 +1571,8 @@ function syncUIFromSettings(settingsMgr) {
   const outClockSize = document.getElementById("out-clock-size");
   if (slider) slider.value = String(s.numberSize);
   if (outSize) outSize.textContent = `${Math.round(s.numberSize * 100)}%`;
-  if (clockSlider) clockSlider.value = String(s.clockSize ?? 1);
-  if (outClockSize) outClockSize.textContent = `${Math.round((s.clockSize ?? 1) * 100)}%`;
+  if (clockSlider) clockSlider.value = String(s.clockSize ?? 0.75);
+  if (outClockSize) outClockSize.textContent = `${Math.round((s.clockSize ?? 0.75) * 100)}%`;
   document.querySelectorAll('input[name="numeral"]').forEach((r) => {
     r.checked = r.value === s.numeral;
   });
@@ -1067,6 +1580,7 @@ function syncUIFromSettings(settingsMgr) {
   const themeSwatchEl = document.getElementById("theme-select-swatch");
   const themeNameEl = document.getElementById("theme-select-name");
   const handSelect = document.getElementById("set-hand-style");
+  const secondMotionSelect = document.getElementById("set-second-motion");
   const faceSelect = document.getElementById("set-face-shape");
   const borderSelect = document.getElementById("set-border-style");
   if (languageSelect) languageSelect.value = s.language ?? "en";
@@ -1077,14 +1591,24 @@ function syncUIFromSettings(settingsMgr) {
     themeNameEl.textContent = t(themeI18nKey(themeKey));
   }
   if (handSelect) handSelect.value = s.handStyle;
+  if (secondMotionSelect) secondMotionSelect.value = s.secondMotion === "tick" ? "tick" : "smooth";
   if (faceSelect) faceSelect.value = s.faceShape;
   if (borderSelect) borderSelect.value = s.borderStyle ?? "solid";
   syncColorModeButton(document.getElementById("btn-color-mode"), s.colorMode);
 }
 
+const CLOCK_SIZE_MIN = 0.35;
+const CLOCK_SIZE_MAX = 1;
+
+function clampClockSize(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return CLOCK_SIZE_MAX * 0.75;
+  return Math.min(CLOCK_SIZE_MAX, Math.max(CLOCK_SIZE_MIN, Math.round(n * 100) / 100));
+}
+
 function adjustClockSize(settingsMgr, delta) {
-  const cur = settingsMgr.settings.clockSize ?? 1;
-  const next = Math.min(1.5, Math.max(0.5, Math.round((cur + delta) * 100) / 100));
+  const cur = settingsMgr.settings.clockSize ?? 0.75;
+  const next = clampClockSize(cur + delta);
   if (next !== cur) settingsMgr.set({ clockSize: next });
 }
 
@@ -1133,22 +1657,37 @@ function bindKeyboard(fullscreen, settingsPanel, settingsMgr) {
   });
 }
 
-function init() {
+async function init() {
   const settingsMgr = new SettingsManager();
   settingsMgr.load();
+
+  const imageStore = new BackgroundImageStore();
+  try {
+    await imageStore.hydrate();
+  } catch {
+    /* IndexedDB unavailable */
+  }
+  syncBgImageUI(imageStore);
+
   syncUIFromSettings(settingsMgr);
 
   const clock = new AnalogClock(document.querySelector(".clock"));
+  clock.setSecondMotion(settingsMgr.settings.secondMotion);
   clock.start();
 
   const fullscreen = new FullscreenController(document.getElementById("btn-fullscreen"));
   const panel = document.getElementById("settings-panel");
 
   bindSettingsUI(settingsMgr);
+  bindBackgroundImages(imageStore, panel);
   bindKeyboard(fullscreen, panel, settingsMgr);
   bindWheel(settingsMgr, panel);
 
-  window.AnalogClockApp = { settings: settingsMgr, clock, fullscreen };
+  settingsMgr.onChange((s) => {
+    clock.setSecondMotion(s.secondMotion);
+  });
+
+  window.AnalogClockApp = { settings: settingsMgr, clock, fullscreen, images: imageStore };
 }
 
 if (document.readyState === "loading") {

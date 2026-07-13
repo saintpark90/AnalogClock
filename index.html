@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-border-style="solid" data-numeral="arabic">
+<html lang="en" data-color-mode="dark" data-hand-style="bar" data-second-motion="smooth" data-face-shape="circle" data-border-style="solid" data-numeral="arabic">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,30 +27,32 @@
   <main class="clock-app">
     <div class="clock" role="img" data-i18n-label="clockAria" aria-label="Analog clock">
       <div class="clock__face">
-        <ul class="clock__markers" aria-hidden="true">
-          <li></li><li></li><li></li><li></li><li></li><li></li>
-          <li></li><li></li><li></li><li></li><li></li><li></li>
-        </ul>
+        <div class="clock__dial">
+          <ul class="clock__markers" aria-hidden="true">
+            <li></li><li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li><li></li>
+          </ul>
 
-        <ol class="clock__numbers" aria-hidden="true">
-          <li><span data-n="12">12</span></li>
-          <li><span data-n="1">1</span></li>
-          <li><span data-n="2">2</span></li>
-          <li><span data-n="3">3</span></li>
-          <li><span data-n="4">4</span></li>
-          <li><span data-n="5">5</span></li>
-          <li><span data-n="6">6</span></li>
-          <li><span data-n="7">7</span></li>
-          <li><span data-n="8">8</span></li>
-          <li><span data-n="9">9</span></li>
-          <li><span data-n="10">10</span></li>
-          <li><span data-n="11">11</span></li>
-        </ol>
+          <ol class="clock__numbers" aria-hidden="true">
+            <li><span data-n="12">12</span></li>
+            <li><span data-n="1">1</span></li>
+            <li><span data-n="2">2</span></li>
+            <li><span data-n="3">3</span></li>
+            <li><span data-n="4">4</span></li>
+            <li><span data-n="5">5</span></li>
+            <li><span data-n="6">6</span></li>
+            <li><span data-n="7">7</span></li>
+            <li><span data-n="8">8</span></li>
+            <li><span data-n="9">9</span></li>
+            <li><span data-n="10">10</span></li>
+            <li><span data-n="11">11</span></li>
+          </ol>
 
-        <div class="hand hand--hour" aria-hidden="true"></div>
-        <div class="hand hand--minute" aria-hidden="true"></div>
-        <div class="hand hand--second" aria-hidden="true"></div>
-        <div class="clock__hub" aria-hidden="true"></div>
+          <div class="hand hand--hour" aria-hidden="true"></div>
+          <div class="hand hand--minute" aria-hidden="true"></div>
+          <div class="hand hand--second" aria-hidden="true"></div>
+          <div class="clock__hub" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -101,6 +103,7 @@
             <input type="range" id="set-number-size" min="0.6" max="3" step="0.05" value="1">
             <output id="out-number-size">100%</output>
           </label>
+          <button type="button" class="settings__reset-value" id="btn-reset-number-size" data-i18n="resetSize">Reset</button>
           <fieldset class="settings__fieldset">
             <legend class="visually-hidden" data-i18n="numbers">Numbers</legend>
             <label class="settings__chip"><input type="radio" name="numeral" value="arabic" checked> <span data-i18n="arabic">Arabic</span></label>
@@ -112,9 +115,10 @@
           <h3 data-i18n="clock">Clock</h3>
           <label class="settings__row">
             <span data-i18n="size">Size</span>
-            <input type="range" id="set-clock-size" min="0.5" max="1.5" step="0.05" value="1">
-            <output id="out-clock-size">100%</output>
+            <input type="range" id="set-clock-size" min="0.35" max="1" step="0.05" value="0.75">
+            <output id="out-clock-size">75%</output>
           </label>
+          <button type="button" class="settings__reset-value" id="btn-reset-clock-size" data-i18n="resetSize">Reset</button>
         </section>
 
         <section class="settings__section">
@@ -128,13 +132,30 @@
         </section>
 
         <section class="settings__section">
+          <h3 data-i18n="secondMotion">Second hand</h3>
+          <select id="set-second-motion" class="settings__select">
+            <option value="smooth" data-i18n="secondSmooth">Smooth</option>
+            <option value="tick" data-i18n="secondTick">Tick (per second)</option>
+          </select>
+        </section>
+
+        <section class="settings__section">
           <h3 data-i18n="faceShape">Clock shape</h3>
           <select id="set-face-shape" class="settings__select">
             <option value="circle" data-i18n="faceCircle">Circle</option>
             <option value="square" data-i18n="faceSquare">Square</option>
+            <option value="rounded" data-i18n="faceRounded">Rounded square</option>
             <option value="rect-portrait" data-i18n="faceRectPortrait">Rectangle (portrait)</option>
             <option value="rect-landscape" data-i18n="faceRectLandscape">Rectangle (landscape)</option>
+            <option value="oval-portrait" data-i18n="faceOvalPortrait">Oval (portrait)</option>
+            <option value="oval-landscape" data-i18n="faceOvalLandscape">Oval (landscape)</option>
+            <option value="stadium" data-i18n="faceStadium">Stadium</option>
+            <option value="arch" data-i18n="faceArch">Arch</option>
+            <option value="hexagon" data-i18n="faceHexagon">Hexagon</option>
+            <option value="octagon" data-i18n="faceOctagon">Octagon</option>
+            <option value="diamond" data-i18n="faceDiamond">Diamond</option>
             <option value="trapezoid" data-i18n="faceTrapezoid">Trapezoid</option>
+            <option value="shield" data-i18n="faceShield">Shield</option>
           </select>
         </section>
 
@@ -151,6 +172,39 @@
             <option value="raised" data-i18n="borderRaised">Raised</option>
             <option value="classic" data-i18n="borderClassic">Classic</option>
           </select>
+        </section>
+
+        <section class="settings__section settings__section--bg-images">
+          <h3 data-i18n="bgImages">Background images</h3>
+          <p class="settings__hint" data-i18n="bgImagesHint">Choose a local file, drag &amp; drop, or paste (Ctrl+V).</p>
+
+          <div class="bg-image" data-image-key="bg">
+            <div class="bg-image__label" data-i18n="colorBg">Background</div>
+            <div class="bg-image__drop" tabindex="0" role="button" data-i18n-label="bgImageDrop" aria-label="Click, drop, or paste">
+              <img class="bg-image__preview" alt="" hidden>
+              <span class="bg-image__placeholder" data-i18n="bgImageDrop">Click, drop, or paste</span>
+              <input type="file" class="bg-image__file" accept="image/*" hidden>
+            </div>
+            <div class="bg-image__actions">
+              <button type="button" class="bg-image__btn" data-action="choose" data-i18n="bgImageChoose">Choose image</button>
+              <button type="button" class="bg-image__btn" data-action="paste" data-i18n="bgImagePaste">Paste</button>
+              <button type="button" class="bg-image__btn bg-image__btn--clear" data-action="clear" data-i18n="bgImageClear" hidden>Clear</button>
+            </div>
+          </div>
+
+          <div class="bg-image" data-image-key="faceBg">
+            <div class="bg-image__label" data-i18n="colorFaceBg">Clock face</div>
+            <div class="bg-image__drop" tabindex="0" role="button" data-i18n-label="bgImageDrop" aria-label="Click, drop, or paste">
+              <img class="bg-image__preview" alt="" hidden>
+              <span class="bg-image__placeholder" data-i18n="bgImageDrop">Click, drop, or paste</span>
+              <input type="file" class="bg-image__file" accept="image/*" hidden>
+            </div>
+            <div class="bg-image__actions">
+              <button type="button" class="bg-image__btn" data-action="choose" data-i18n="bgImageChoose">Choose image</button>
+              <button type="button" class="bg-image__btn" data-action="paste" data-i18n="bgImagePaste">Paste</button>
+              <button type="button" class="bg-image__btn bg-image__btn--clear" data-action="clear" data-i18n="bgImageClear" hidden>Clear</button>
+            </div>
+          </div>
         </section>
 
         <section class="settings__section settings__section--colors">
