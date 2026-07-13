@@ -715,10 +715,13 @@ body.settings-open .settings:not([hidden]) {
   flex: 1;
   min-height: 0;
   padding: 0.55rem 0.85rem 0.7rem;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings__section {
@@ -735,8 +738,6 @@ body.settings-open .settings:not([hidden]) {
 }
 
 .settings__section--colors {
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -944,8 +945,6 @@ body.settings-open .settings:not([hidden]) {
 }
 
 .settings__colors {
-  flex: 1;
-  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.28rem 0.45rem;
@@ -997,11 +996,26 @@ html[data-face-bg-image="true"] .clock__face {
   background-repeat: no-repeat;
 }
 
-.settings__hint {
-  margin: 0 0 0.55rem;
-  font-size: 0.7rem;
-  line-height: 1.35;
-  color: var(--ui-muted);
+.settings__check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.45rem 0 0.35rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.settings__check input {
+  accent-color: var(--color-hand-second);
+}
+
+.settings__tick-sound .settings__select {
+  margin-top: 0.15rem;
+}
+
+.settings__tick-sound[hidden] {
+  display: none;
 }
 
 .bg-image {

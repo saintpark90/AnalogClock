@@ -393,6 +393,8 @@ const I18N = {
     clock: "Clock",
     handStyle: "Hand style", handBar: "Bar", handArrow: "Arrow", handSquare: "Square", handRounded: "Rounded",
     secondMotion: "Second hand", secondSmooth: "Smooth", secondTick: "Tick (per second)",
+    tickSound: "Tick sound", tickSound1: "Sound 1", tickSound2: "Sound 2", tickSound3: "Sound 3",
+    tickSound4: "Sound 4", tickSound5: "Sound 5", tickSound6: "Sound 6",
     faceShape: "Clock shape", faceCircle: "Circle", faceSquare: "Square", faceRounded: "Rounded square",
     faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (landscape)",
     faceOvalPortrait: "Oval (portrait)", faceOvalLandscape: "Oval (landscape)", faceStadium: "Stadium",
@@ -423,6 +425,8 @@ const I18N = {
     clock: "시계",
     handStyle: "바늘 모양", handBar: "막대형", handArrow: "화살표형", handSquare: "네모형", handRounded: "둥근형",
     secondMotion: "초침", secondSmooth: "부드럽게", secondTick: "초마다 끊어서",
+    tickSound: "초침 소리", tickSound1: "사운드 1", tickSound2: "사운드 2", tickSound3: "사운드 3",
+    tickSound4: "사운드 4", tickSound5: "사운드 5", tickSound6: "사운드 6",
     faceShape: "시계 모양", faceCircle: "원형", faceSquare: "정사각형", faceRounded: "둥근 사각형",
     faceRectPortrait: "직사각형 (세로)", faceRectLandscape: "직사각형 (가로)",
     faceOvalPortrait: "타원 (세로)", faceOvalLandscape: "타원 (가로)", faceStadium: "스타디움",
@@ -453,6 +457,8 @@ const I18N = {
     clock: "時計",
     handStyle: "針の形", handBar: "バー", handArrow: "矢印", handSquare: "四角", handRounded: "丸み",
     secondMotion: "秒針", secondSmooth: "スムーズ", secondTick: "秒ごとに刻む",
+    tickSound: "秒針音", tickSound1: "サウンド 1", tickSound2: "サウンド 2", tickSound3: "サウンド 3",
+    tickSound4: "サウンド 4", tickSound5: "サウンド 5", tickSound6: "サウンド 6",
     faceShape: "文字盤の形", faceCircle: "円形", faceSquare: "正方形", faceRounded: "角丸四角",
     faceRectPortrait: "長方形（縦）", faceRectLandscape: "長方形（横）",
     faceOvalPortrait: "楕円（縦）", faceOvalLandscape: "楕円（横）", faceStadium: "スタジアム",
@@ -483,6 +489,8 @@ const I18N = {
     clock: "时钟",
     handStyle: "指针样式", handBar: "条形", handArrow: "箭头", handSquare: "方形", handRounded: "圆角",
     secondMotion: "秒针", secondSmooth: "平滑", secondTick: "每秒跳动",
+    tickSound: "秒针声音", tickSound1: "声音 1", tickSound2: "声音 2", tickSound3: "声音 3",
+    tickSound4: "声音 4", tickSound5: "声音 5", tickSound6: "声音 6",
     faceShape: "表盘形状", faceCircle: "圆形", faceSquare: "正方形", faceRounded: "圆角方形",
     faceRectPortrait: "矩形（竖向）", faceRectLandscape: "矩形（横向）",
     faceOvalPortrait: "椭圆（竖向）", faceOvalLandscape: "椭圆（横向）", faceStadium: "胶囊形",
@@ -513,6 +521,8 @@ const I18N = {
     clock: "Reloj",
     handStyle: "Estilo de aguja", handBar: "Barra", handArrow: "Flecha", handSquare: "Cuadrado", handRounded: "Redondeado",
     secondMotion: "Segundero", secondSmooth: "Suave", secondTick: "A saltos (por segundo)",
+    tickSound: "Sonido del segundero", tickSound1: "Sonido 1", tickSound2: "Sonido 2", tickSound3: "Sonido 3",
+    tickSound4: "Sonido 4", tickSound5: "Sonido 5", tickSound6: "Sonido 6",
     faceShape: "Forma del reloj", faceCircle: "Círculo", faceSquare: "Cuadrado", faceRounded: "Cuadrado redondeado",
     faceRectPortrait: "Rectángulo (vertical)", faceRectLandscape: "Rectángulo (horizontal)",
     faceOvalPortrait: "Óvalo (vertical)", faceOvalLandscape: "Óvalo (horizontal)", faceStadium: "Estadio",
@@ -543,6 +553,8 @@ const I18N = {
     clock: "Horloge",
     handStyle: "Style d'aiguille", handBar: "Barre", handArrow: "Flèche", handSquare: "Carré", handRounded: "Arrondi",
     secondMotion: "Aiguille des secondes", secondSmooth: "Fluide", secondTick: "Par à-coups (chaque seconde)",
+    tickSound: "Son du trotteuse", tickSound1: "Son 1", tickSound2: "Son 2", tickSound3: "Son 3",
+    tickSound4: "Son 4", tickSound5: "Son 5", tickSound6: "Son 6",
     faceShape: "Forme de l'horloge", faceCircle: "Cercle", faceSquare: "Carré", faceRounded: "Carré arrondi",
     faceRectPortrait: "Rectangle (portrait)", faceRectLandscape: "Rectangle (paysage)",
     faceOvalPortrait: "Ovale (portrait)", faceOvalLandscape: "Ovale (paysage)", faceStadium: "Stade",
@@ -573,6 +585,8 @@ const I18N = {
     clock: "Uhr",
     handStyle: "Zeigerstil", handBar: "Balken", handArrow: "Pfeil", handSquare: "Eckig", handRounded: "Abgerundet",
     secondMotion: "Sekundenzeiger", secondSmooth: "Fließend", secondTick: "Taktend (pro Sekunde)",
+    tickSound: "Sekundenton", tickSound1: "Sound 1", tickSound2: "Sound 2", tickSound3: "Sound 3",
+    tickSound4: "Sound 4", tickSound5: "Sound 5", tickSound6: "Sound 6",
     faceShape: "Uhrform", faceCircle: "Kreis", faceSquare: "Quadrat", faceRounded: "Abgerundetes Quadrat",
     faceRectPortrait: "Rechteck (hoch)", faceRectLandscape: "Rechteck (quer)",
     faceOvalPortrait: "Oval (hoch)", faceOvalLandscape: "Oval (quer)", faceStadium: "Stadion",
@@ -603,6 +617,8 @@ const I18N = {
     clock: "Orologio",
     handStyle: "Stile lancette", handBar: "Barra", handArrow: "Freccia", handSquare: "Quadrato", handRounded: "Arrotondato",
     secondMotion: "Lancetta dei secondi", secondSmooth: "Fluida", secondTick: "A scatti (al secondo)",
+    tickSound: "Suono secondi", tickSound1: "Suono 1", tickSound2: "Suono 2", tickSound3: "Suono 3",
+    tickSound4: "Suono 4", tickSound5: "Suono 5", tickSound6: "Suono 6",
     faceShape: "Forma orologio", faceCircle: "Cerchio", faceSquare: "Quadrato", faceRounded: "Quadrato arrotondato",
     faceRectPortrait: "Rettangolo (verticale)", faceRectLandscape: "Rettangolo (orizzontale)",
     faceOvalPortrait: "Ovale (verticale)", faceOvalLandscape: "Ovale (orizzontale)", faceStadium: "Stadio",
@@ -633,6 +649,8 @@ const I18N = {
     clock: "Relógio",
     handStyle: "Estilo do ponteiro", handBar: "Barra", handArrow: "Seta", handSquare: "Quadrado", handRounded: "Arredondado",
     secondMotion: "Ponteiro dos segundos", secondSmooth: "Suave", secondTick: "Em ticks (por segundo)",
+    tickSound: "Som dos segundos", tickSound1: "Som 1", tickSound2: "Som 2", tickSound3: "Som 3",
+    tickSound4: "Som 4", tickSound5: "Som 5", tickSound6: "Som 6",
     faceShape: "Forma do relógio", faceCircle: "Círculo", faceSquare: "Quadrado", faceRounded: "Quadrado arredondado",
     faceRectPortrait: "Retângulo (vertical)", faceRectLandscape: "Retângulo (horizontal)",
     faceOvalPortrait: "Oval (vertical)", faceOvalLandscape: "Oval (horizontal)", faceStadium: "Estádio",
@@ -663,6 +681,8 @@ const I18N = {
     clock: "Часы",
     handStyle: "Стиль стрелок", handBar: "Полоса", handArrow: "Стрелка", handSquare: "Квадрат", handRounded: "Скругление",
     secondMotion: "Секундная стрелка", secondSmooth: "Плавно", secondTick: "Рывками (каждую секунду)",
+    tickSound: "Звук секунд", tickSound1: "Звук 1", tickSound2: "Звук 2", tickSound3: "Звук 3",
+    tickSound4: "Звук 4", tickSound5: "Звук 5", tickSound6: "Звук 6",
     faceShape: "Форма часов", faceCircle: "Круг", faceSquare: "Квадрат", faceRounded: "Скруглённый квадрат",
     faceRectPortrait: "Прямоугольник (верт.)", faceRectLandscape: "Прямоугольник (гориз.)",
     faceOvalPortrait: "Овал (верт.)", faceOvalLandscape: "Овал (гориз.)", faceStadium: "Стадион",
@@ -693,6 +713,8 @@ const I18N = {
     clock: "घड़ी",
     handStyle: "सुई का प्रकार", handBar: "पट्टी", handArrow: "तीर", handSquare: "चौकोर", handRounded: "गोल",
     secondMotion: "सेकंड सुई", secondSmooth: "स्मूद", secondTick: "टिक (प्रति सेकंड)",
+    tickSound: "टिक ध्वनि", tickSound1: "ध्वनि 1", tickSound2: "ध्वनि 2", tickSound3: "ध्वनि 3",
+    tickSound4: "ध्वनि 4", tickSound5: "ध्वनि 5", tickSound6: "ध्वनि 6",
     faceShape: "घड़ी का आकार", faceCircle: "वृत्त", faceSquare: "वर्ग", faceRounded: "गोल वर्ग",
     faceRectPortrait: "आयत (खड़ा)", faceRectLandscape: "आयत (चौड़ा)",
     faceOvalPortrait: "अंडाकार (खड़ा)", faceOvalLandscape: "अंडाकार (चौड़ा)", faceStadium: "स्टेडियम",
@@ -723,6 +745,8 @@ const I18N = {
     clock: "الساعة",
     handStyle: "شكل العقارب", handBar: "شريط", handArrow: "سهم", handSquare: "مربع", handRounded: "دائري",
     secondMotion: "عقرب الثواني", secondSmooth: "سلس", secondTick: "نقرة كل ثانية",
+    tickSound: "صوت الثواني", tickSound1: "صوت 1", tickSound2: "صوت 2", tickSound3: "صوت 3",
+    tickSound4: "صوت 4", tickSound5: "صوت 5", tickSound6: "صوت 6",
     faceShape: "شكل الساعة", faceCircle: "دائرة", faceSquare: "مربع", faceRounded: "مربع مستدير",
     faceRectPortrait: "مستطيل (عمودي)", faceRectLandscape: "مستطيل (أفقي)",
     faceOvalPortrait: "بيضاوي (عمودي)", faceOvalLandscape: "بيضاوي (أفقي)", faceStadium: "ملعب",
@@ -956,10 +980,19 @@ const DEFAULT_SETTINGS = {
   numeral: "arabic",
   handStyle: "bar",
   secondMotion: "smooth",
+  tickSound: false,
+  tickSoundId: "01",
   faceShape: "circle",
   borderStyle: "solid",
   colors: { ...PALETTES.dark, hubRing: PALETTES.dark.hubRing },
 };
+
+const TICK_SOUND_IDS = new Set(["01", "02", "03", "04", "05", "06"]);
+
+function tickSoundUrl(id) {
+  const safe = TICK_SOUND_IDS.has(id) ? id : "01";
+  return `sound/second_sound_${safe}.mp3`;
+}
 
 const FACE_SHAPES = new Set([
   "circle", "square", "rounded",
@@ -1004,6 +1037,7 @@ function normalizeSettings(saved) {
   const palette = themePalette(themeKey, mode);
   const faceShape = FACE_SHAPES.has(src.faceShape) ? src.faceShape : "circle";
   const secondMotion = src.secondMotion === "tick" ? "tick" : "smooth";
+  const tickSoundId = TICK_SOUND_IDS.has(src.tickSoundId) ? src.tickSoundId : "01";
   return {
     ...cloneDefaults(),
     ...src,
@@ -1011,6 +1045,8 @@ function normalizeSettings(saved) {
     colorMode: mode,
     faceShape,
     secondMotion,
+    tickSound: Boolean(src.tickSound) && secondMotion === "tick",
+    tickSoundId,
     clockSize: clampClockSize(src.clockSize ?? cloneDefaults().clockSize),
     colors: { ...palette, ...(src.colors || {}) },
   };
@@ -1051,6 +1087,8 @@ function buildShareUrl(settings) {
     numeral: settings.numeral,
     handStyle: settings.handStyle,
     secondMotion: settings.secondMotion,
+    tickSound: settings.tickSound,
+    tickSoundId: settings.tickSoundId,
     faceShape: settings.faceShape,
     borderStyle: settings.borderStyle,
     colors: settings.colors,
@@ -1187,6 +1225,162 @@ function toHex(color) {
   return `#${m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`;
 }
 
+class TickSoundPlayer {
+  constructor() {
+    this.enabled = false;
+    this.soundId = "01";
+    this._ctx = null;
+    this._buffer = null;
+    this._slices = [];
+    this._index = 0;
+    this._loadToken = 0;
+    this._gain = null;
+  }
+
+  _ensureContext() {
+    if (!this._ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      this._ctx = new AC();
+      this._gain = this._ctx.createGain();
+      this._gain.gain.value = 0.85;
+      this._gain.connect(this._ctx.destination);
+    }
+    return this._ctx;
+  }
+
+  async unlock() {
+    const ctx = this._ensureContext();
+    if (!ctx) return;
+    if (ctx.state === "suspended") {
+      try {
+        await ctx.resume();
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  async setSoundId(id) {
+    const next = TICK_SOUND_IDS.has(id) ? id : "01";
+    if (next === this.soundId && this._buffer) {
+      this.soundId = next;
+      return;
+    }
+    this.soundId = next;
+    await this._load(next);
+  }
+
+  setEnabled(on) {
+    this.enabled = Boolean(on);
+  }
+
+  async _load(id) {
+    const token = ++this._loadToken;
+    const ctx = this._ensureContext();
+    if (!ctx) return;
+    try {
+      const res = await fetch(tickSoundUrl(id));
+      if (!res.ok) throw new Error("fetch failed");
+      const raw = await res.arrayBuffer();
+      const buffer = await ctx.decodeAudioData(raw.slice(0));
+      if (token !== this._loadToken) return;
+      this._buffer = buffer;
+      this._slices = detectTickSlices(buffer);
+      this._index = 0;
+    } catch {
+      if (token !== this._loadToken) return;
+      this._buffer = null;
+      this._slices = [];
+    }
+  }
+
+  playTick() {
+    if (!this.enabled || !this._buffer || !this._slices.length) return;
+    const ctx = this._ensureContext();
+    if (!ctx || ctx.state !== "running") {
+      this.unlock();
+      return;
+    }
+    const slice = this._slices[this._index % this._slices.length];
+    this._index = (this._index + 1) % this._slices.length;
+    const src = ctx.createBufferSource();
+    src.buffer = this._buffer;
+    src.connect(this._gain || ctx.destination);
+    try {
+      src.start(ctx.currentTime, slice.start, slice.duration);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/** Find per-tick segments inside a multi-tick recording. */
+function detectTickSlices(buffer) {
+  const data = buffer.getChannelData(0);
+  const sr = buffer.sampleRate;
+  const duration = buffer.duration;
+  const hop = Math.max(1, Math.floor(sr * 0.01));
+  const win = Math.max(hop, Math.floor(sr * 0.025));
+  const energies = [];
+  for (let i = 0; i + win < data.length; i += hop) {
+    let sum = 0;
+    for (let j = 0; j < win; j++) {
+      const v = data[i + j];
+      sum += v * v;
+    }
+    energies.push({ t: i / sr, e: sum / win });
+  }
+  if (!energies.length) {
+    return [{ start: 0, duration: Math.min(0.2, duration) }];
+  }
+
+  const sorted = energies.map((x) => x.e).sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)] || 0;
+  const peak = sorted[sorted.length - 1] || 0;
+  const threshold = Math.max(median * 8, peak * 0.18, 1e-8);
+  const minGap = 0.35;
+
+  const onsets = [];
+  let last = -Infinity;
+  let armed = true;
+  for (let i = 1; i < energies.length - 1; i++) {
+    const prev = energies[i - 1].e;
+    const cur = energies[i].e;
+    const next = energies[i + 1].e;
+    const t = energies[i].t;
+    if (armed && cur >= threshold && cur >= prev && cur >= next && t - last >= minGap) {
+      onsets.push(Math.max(0, t - 0.012));
+      last = t;
+      armed = false;
+    }
+    if (cur < threshold * 0.45) armed = true;
+  }
+
+  if (onsets.length < 2) {
+    // Fallback: assume 1 Hz ticks across the whole file.
+    const count = Math.max(1, Math.round(duration));
+    const step = duration / count;
+    const slices = [];
+    for (let i = 0; i < count; i++) {
+      slices.push({
+        start: i * step,
+        duration: Math.min(0.28, step * 0.9),
+      });
+    }
+    return slices;
+  }
+
+  const slices = [];
+  for (let i = 0; i < onsets.length; i++) {
+    const start = onsets[i];
+    const end = i + 1 < onsets.length ? onsets[i + 1] : Math.min(duration, start + 0.28);
+    const dur = Math.max(0.05, Math.min(0.35, end - start - 0.02));
+    slices.push({ start, duration: dur });
+  }
+  return slices;
+}
+
 class AnalogClock {
   constructor(root) {
     this.root = root;
@@ -1197,10 +1391,17 @@ class AnalogClock {
     this._intervalId = null;
     this._running = false;
     this.secondMotion = "smooth";
+    this.tickSound = null;
+    this._lastTickSec = null;
   }
 
   setSecondMotion(mode) {
     this.secondMotion = mode === "tick" ? "tick" : "smooth";
+    if (this.secondMotion !== "tick") this._lastTickSec = null;
+  }
+
+  setTickSoundPlayer(player) {
+    this.tickSound = player;
   }
 
   static getAngles(date = new Date(), secondMotion = "smooth") {
@@ -1218,10 +1419,21 @@ class AnalogClock {
   }
 
   tick() {
-    const { hour, minute, second } = AnalogClock.getAngles(new Date(), this.secondMotion);
+    const now = new Date();
+    const { hour, minute, second } = AnalogClock.getAngles(now, this.secondMotion);
     this.setHandRotation(this.hourHand, hour);
     this.setHandRotation(this.minuteHand, minute);
     this.setHandRotation(this.secondHand, second);
+
+    if (this.secondMotion === "tick") {
+      const sec = now.getSeconds();
+      if (this._lastTickSec === null) {
+        this._lastTickSec = sec;
+      } else if (sec !== this._lastTickSec) {
+        this._lastTickSec = sec;
+        this.tickSound?.playTick();
+      }
+    }
   }
 
   start() {
@@ -1321,7 +1533,23 @@ function buildThemeList(list, selectedKey, mode = "dark") {
   });
 }
 
-function bindSettingsUI(settingsMgr) {
+function syncTickSoundControls(settings) {
+  const wrap = document.getElementById("tick-sound-settings");
+  const check = document.getElementById("set-tick-sound");
+  const file = document.getElementById("set-tick-sound-file");
+  const isTick = settings.secondMotion === "tick";
+  if (wrap) wrap.hidden = !isTick;
+  if (check) {
+    check.checked = Boolean(settings.tickSound) && isTick;
+    check.disabled = !isTick;
+  }
+  if (file) {
+    file.value = TICK_SOUND_IDS.has(settings.tickSoundId) ? settings.tickSoundId : "01";
+    file.disabled = !isTick || !settings.tickSound;
+  }
+}
+
+function bindSettingsUI(settingsMgr, tickPlayer) {
   const panel = document.getElementById("settings-panel");
   const btnSettings = document.getElementById("btn-settings");
   const btnColorMode = document.getElementById("btn-color-mode");
@@ -1337,6 +1565,8 @@ function bindSettingsUI(settingsMgr) {
   const themeList = document.getElementById("theme-select-list");
   const handSelect = document.getElementById("set-hand-style");
   const secondMotionSelect = document.getElementById("set-second-motion");
+  const tickSoundCheck = document.getElementById("set-tick-sound");
+  const tickSoundFile = document.getElementById("set-tick-sound-file");
   const faceSelect = document.getElementById("set-face-shape");
   const borderSelect = document.getElementById("set-border-style");
   const colorContainer = document.getElementById("color-inputs");
@@ -1482,7 +1712,34 @@ function bindSettingsUI(settingsMgr) {
   });
 
   secondMotionSelect?.addEventListener("change", () => {
-    settingsMgr.set({ secondMotion: secondMotionSelect.value });
+    const secondMotion = secondMotionSelect.value === "tick" ? "tick" : "smooth";
+    const patch = { secondMotion };
+    if (secondMotion !== "tick") patch.tickSound = false;
+    settingsMgr.set(patch);
+    syncTickSoundControls(settingsMgr.settings);
+  });
+
+  tickSoundCheck?.addEventListener("change", async () => {
+    const on = Boolean(tickSoundCheck.checked);
+    if (on) await tickPlayer?.unlock();
+    settingsMgr.set({ tickSound: on && settingsMgr.settings.secondMotion === "tick" });
+    syncTickSoundControls(settingsMgr.settings);
+    if (tickPlayer) {
+      tickPlayer.setEnabled(settingsMgr.settings.tickSound);
+      if (settingsMgr.settings.tickSound) {
+        await tickPlayer.setSoundId(settingsMgr.settings.tickSoundId);
+      }
+    }
+  });
+
+  tickSoundFile?.addEventListener("change", async () => {
+    const id = tickSoundFile.value;
+    settingsMgr.set({ tickSoundId: id });
+    if (tickPlayer) {
+      await tickPlayer.unlock();
+      await tickPlayer.setSoundId(id);
+      if (settingsMgr.settings.tickSound) tickPlayer.playTick();
+    }
   });
 
   faceSelect?.addEventListener("change", () => {
@@ -1551,6 +1808,7 @@ function bindSettingsUI(settingsMgr) {
     updateThemeTrigger(s.theme);
     if (handSelect) handSelect.value = s.handStyle;
     if (secondMotionSelect) secondMotionSelect.value = s.secondMotion === "tick" ? "tick" : "smooth";
+    syncTickSoundControls(s);
     if (faceSelect) faceSelect.value = s.faceShape;
     if (borderSelect) borderSelect.value = s.borderStyle;
     syncColorModeButton(btnColorMode, s.colorMode);
@@ -1592,6 +1850,7 @@ function syncUIFromSettings(settingsMgr) {
   }
   if (handSelect) handSelect.value = s.handStyle;
   if (secondMotionSelect) secondMotionSelect.value = s.secondMotion === "tick" ? "tick" : "smooth";
+  syncTickSoundControls(s);
   if (faceSelect) faceSelect.value = s.faceShape;
   if (borderSelect) borderSelect.value = s.borderStyle ?? "solid";
   syncColorModeButton(document.getElementById("btn-color-mode"), s.colorMode);
@@ -1671,23 +1930,49 @@ async function init() {
 
   syncUIFromSettings(settingsMgr);
 
+  const tickPlayer = new TickSoundPlayer();
+  tickPlayer.setEnabled(Boolean(settingsMgr.settings.tickSound));
+  if (settingsMgr.settings.tickSound) {
+    tickPlayer.setSoundId(settingsMgr.settings.tickSoundId).catch(() => {});
+  }
+
   const clock = new AnalogClock(document.querySelector(".clock"));
+  clock.setTickSoundPlayer(tickPlayer);
   clock.setSecondMotion(settingsMgr.settings.secondMotion);
   clock.start();
 
   const fullscreen = new FullscreenController(document.getElementById("btn-fullscreen"));
   const panel = document.getElementById("settings-panel");
 
-  bindSettingsUI(settingsMgr);
+  bindSettingsUI(settingsMgr, tickPlayer);
   bindBackgroundImages(imageStore, panel);
   bindKeyboard(fullscreen, panel, settingsMgr);
   bindWheel(settingsMgr, panel);
 
+  // Browsers require a user gesture before audio can play.
+  const unlockAudioOnce = () => {
+    tickPlayer.unlock();
+    window.removeEventListener("pointerdown", unlockAudioOnce);
+    window.removeEventListener("keydown", unlockAudioOnce);
+  };
+  window.addEventListener("pointerdown", unlockAudioOnce);
+  window.addEventListener("keydown", unlockAudioOnce);
+
   settingsMgr.onChange((s) => {
     clock.setSecondMotion(s.secondMotion);
+    tickPlayer.setEnabled(Boolean(s.tickSound) && s.secondMotion === "tick");
+    if (s.tickSound && s.secondMotion === "tick") {
+      tickPlayer.setSoundId(s.tickSoundId).catch(() => {});
+    }
   });
 
-  window.AnalogClockApp = { settings: settingsMgr, clock, fullscreen, images: imageStore };
+  window.AnalogClockApp = {
+    settings: settingsMgr,
+    clock,
+    fullscreen,
+    images: imageStore,
+    tickSound: tickPlayer,
+  };
 }
 
 if (document.readyState === "loading") {
