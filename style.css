@@ -15,7 +15,9 @@
   --color-hub: #f0f0f2;
   --color-hub-ring: rgba(107, 159, 255, 0.45);
 
-  --bg-accent: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1a22 0%, transparent 70%);
+  --bg-accent: radial-gradient(ellipse 80% 60% at 50% 40%,
+    color-mix(in srgb, var(--color-bg) 90%, #ffffff) 0%,
+    var(--color-bg) 65%);
   --face-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04),
     0 24px 48px rgba(0, 0, 0, 0.4),
@@ -37,7 +39,9 @@
 }
 
 [data-color-mode="light"] {
-  --bg-accent: radial-gradient(ellipse 80% 60% at 50% 40%, #e8e8ee 0%, transparent 70%);
+  --bg-accent: radial-gradient(ellipse 80% 60% at 50% 40%,
+    color-mix(in srgb, var(--color-bg) 94%, #000000) 0%,
+    var(--color-bg) 65%);
   --face-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.06),
     0 20px 40px rgba(0, 0, 0, 0.08),
@@ -381,7 +385,7 @@ body.settings-open .clock {
   left: 50%;
   top: 11%;
   transform: translateX(-50%);
-  font-size: calc(clamp(0.75rem, 3.2vmin, 1.4rem) * var(--number-scale));
+  font-size: calc(clamp(0.75rem, 3.2vmin, 2.2rem) * var(--number-scale));
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--color-number);
@@ -390,7 +394,7 @@ body.settings-open .clock {
 }
 
 [data-numeral="roman"] .clock__numbers li span {
-  font-size: calc(clamp(0.65rem, 2.6vmin, 1.15rem) * var(--number-scale));
+  font-size: calc(clamp(0.65rem, 2.6vmin, 1.85rem) * var(--number-scale));
   letter-spacing: -0.02em;
 }
 
@@ -732,6 +736,125 @@ body.settings-open .settings:not([hidden]) {
 
 [data-color-mode="light"] .settings__select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e73' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E");
+}
+
+/* Theme picker (custom dropdown with color swatches) */
+.theme-select {
+  position: relative;
+}
+
+.theme-select__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.theme-swatch {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 1px solid var(--ui-border);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.theme-select__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme-select__list {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-height: 15rem;
+  overflow-y: auto;
+  background: var(--ui-select-bg);
+  border: 1px solid var(--ui-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.theme-select__list[hidden] {
+  display: none;
+}
+
+.theme-select__option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: var(--ui-select-text);
+  cursor: pointer;
+}
+
+.theme-select__option:hover,
+.theme-select__option:focus-visible {
+  background: rgba(127, 127, 140, 0.22);
+  outline: none;
+}
+
+.theme-select__option[aria-selected="true"] {
+  background: rgba(107, 159, 255, 0.22);
+}
+
+/* Share settings URL */
+.settings__section--share {
+  flex-shrink: 0;
+}
+
+.settings__share {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.settings__share-btn {
+  width: 100%;
+  padding: 0.45rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  background: rgba(107, 159, 255, 0.16);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.settings__share-btn:hover {
+  background: rgba(107, 159, 255, 0.28);
+  border-color: var(--color-hand-second);
+}
+
+.settings__share-btn.is-copied {
+  background: rgba(67, 196, 125, 0.24);
+  border-color: rgba(67, 196, 125, 0.6);
+}
+
+.settings__share-url {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 6px;
+  background-color: var(--ui-select-bg);
+  color: var(--ui-select-text);
+  font: inherit;
+  font-size: 0.72rem;
+}
+
+.settings__share-url:focus {
+  outline: none;
+  border-color: var(--color-hand-second);
 }
 
 .settings__colors {

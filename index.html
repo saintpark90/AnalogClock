@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-border-style="solid" data-numeral="arabic">
+<html lang="en" data-color-mode="dark" data-hand-style="bar" data-face-shape="circle" data-border-style="solid" data-numeral="arabic">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="전체화면 아날로그 시계">
+  <meta name="description" content="Fullscreen analog clock">
   <title>Analog Clock</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="toolbar" aria-label="도구">
-    <button type="button" class="toolbar__btn" id="btn-fullscreen" aria-label="전체화면" title="전체화면 (F)">
+  <header class="toolbar" data-i18n-label="toolbarAria" aria-label="Tools">
+    <button type="button" class="toolbar__btn" id="btn-fullscreen" data-i18n-label="fullscreen" data-i18n-title="fullscreenTitle" aria-label="Fullscreen" title="Fullscreen (F)">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M4 15v5h5M20 9V4h-5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
     </button>
-    <button type="button" class="toolbar__btn" id="btn-color-mode" aria-label="라이트 모드로 전환" title="다크/라이트 (L)">
+    <button type="button" class="toolbar__btn" id="btn-color-mode" aria-label="Switch to light mode" title="Dark / Light (L)">
       <svg class="icon icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
       <svg class="icon icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 7 7 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
     </button>
-    <button type="button" class="toolbar__btn" id="btn-settings" aria-label="설정" title="설정 (S)" aria-controls="settings-panel" aria-expanded="false">
+    <button type="button" class="toolbar__btn" id="btn-settings" data-i18n-label="settings" data-i18n-title="settingsTitle" aria-label="Settings" title="Settings (S)" aria-controls="settings-panel" aria-expanded="false">
       <svg class="icon icon--settings" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
         <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 00.12-.61l-1.92-3.32a.5.5 0 00-.57-.22l-2.39.96a7.07 7.07 0 00-1.6-.94L14.5 2.5a.5.5 0 00-.5-.5h-4a.5.5 0 00-.5.5L9.09 5.09c-.54.24-1.06.56-1.56.94L5.11 5.08a.5.5 0 00-.57.22L2.62 8.62a.5.5 0 00.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.62 14.5a.5.5 0 00-.12.61l1.92 3.32c.11.2.36.28.57.22l2.39-.96c.5.38 1.02.7 1.6.94l.41 2.59c.04.27.29.5.56.5h4c.27 0 .52-.22.56-.5l.41-2.59c.58-.24 1.1-.56 1.6-.94l2.39.96c.21.06.46-.02.57-.22l1.92-3.32a.5.5 0 00-.12-.61l-2.03-1.58zM12 15.5A3.5 3.5 0 1115.5 12 3.5 3.5 0 0112 15.5z"/>
       </svg>
@@ -25,7 +25,7 @@
 
   <div class="app-layout">
   <main class="clock-app">
-    <div class="clock" role="img" aria-label="아날로그 시계">
+    <div class="clock" role="img" data-i18n-label="clockAria" aria-label="Analog clock">
       <div class="clock__face">
         <ul class="clock__markers" aria-hidden="true">
           <li></li><li></li><li></li><li></li><li></li><li></li>
@@ -58,74 +58,114 @@
   <aside class="settings" id="settings-panel" hidden aria-labelledby="settings-title">
     <form class="settings__form">
       <header class="settings__header">
-        <h2 id="settings-title">설정</h2>
-        <button type="button" class="settings__close" data-close aria-label="닫기">×</button>
+        <h2 id="settings-title" data-i18n="panelTitle">Settings</h2>
+        <button type="button" class="settings__close" data-close data-i18n-label="close" aria-label="Close">×</button>
       </header>
 
       <div class="settings__body">
         <section class="settings__section">
-          <h3>숫자</h3>
+          <h3 data-i18n="language">Language</h3>
+          <select id="set-language" class="settings__select">
+            <option value="en">English</option>
+            <option value="ko">한국어</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+            <option value="pt">Português</option>
+            <option value="ru">Русский</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ar">العربية</option>
+          </select>
+        </section>
+
+        <section class="settings__section">
+          <h3 id="theme-label" data-i18n="theme">Theme</h3>
+          <div class="theme-select" id="theme-select">
+            <button type="button" class="settings__select theme-select__trigger" id="theme-select-trigger"
+                    aria-haspopup="listbox" aria-expanded="false" aria-labelledby="theme-label theme-select-name">
+              <span class="theme-swatch" id="theme-select-swatch" aria-hidden="true"></span>
+              <span class="theme-select__name" id="theme-select-name" data-i18n="themeClassic">Classic</span>
+            </button>
+            <ul class="theme-select__list" id="theme-select-list" role="listbox" tabindex="-1"
+                aria-labelledby="theme-label" hidden></ul>
+          </div>
+        </section>
+
+        <section class="settings__section">
+          <h3 data-i18n="numbers">Numbers</h3>
           <label class="settings__row">
-            <span>크기</span>
-            <input type="range" id="set-number-size" min="0.6" max="1.8" step="0.05" value="1">
+            <span data-i18n="size">Size</span>
+            <input type="range" id="set-number-size" min="0.6" max="3" step="0.05" value="1">
             <output id="out-number-size">100%</output>
           </label>
           <fieldset class="settings__fieldset">
-            <legend class="visually-hidden">숫자 표기</legend>
-            <label class="settings__chip"><input type="radio" name="numeral" value="arabic" checked> 아라비아</label>
-            <label class="settings__chip"><input type="radio" name="numeral" value="roman"> 로마</label>
+            <legend class="visually-hidden" data-i18n="numbers">Numbers</legend>
+            <label class="settings__chip"><input type="radio" name="numeral" value="arabic" checked> <span data-i18n="arabic">Arabic</span></label>
+            <label class="settings__chip"><input type="radio" name="numeral" value="roman"> <span data-i18n="roman">Roman</span></label>
           </fieldset>
         </section>
 
         <section class="settings__section">
-          <h3>시계</h3>
+          <h3 data-i18n="clock">Clock</h3>
           <label class="settings__row">
-            <span>크기</span>
+            <span data-i18n="size">Size</span>
             <input type="range" id="set-clock-size" min="0.5" max="1.5" step="0.05" value="1">
             <output id="out-clock-size">100%</output>
           </label>
         </section>
 
         <section class="settings__section">
-          <h3>바늘 모양</h3>
+          <h3 data-i18n="handStyle">Hand style</h3>
           <select id="set-hand-style" class="settings__select">
-            <option value="bar">막대형</option>
-            <option value="arrow">화살표형</option>
-            <option value="square">네모형</option>
-            <option value="rounded">둥근형</option>
+            <option value="bar" data-i18n="handBar">Bar</option>
+            <option value="arrow" data-i18n="handArrow">Arrow</option>
+            <option value="square" data-i18n="handSquare">Square</option>
+            <option value="rounded" data-i18n="handRounded">Rounded</option>
           </select>
         </section>
 
         <section class="settings__section">
-          <h3>시계 모양</h3>
+          <h3 data-i18n="faceShape">Clock shape</h3>
           <select id="set-face-shape" class="settings__select">
-            <option value="circle">원형</option>
-            <option value="square">정사각형</option>
-            <option value="rect-portrait">직사각형 (세로)</option>
-            <option value="rect-landscape">직사각형 (가로)</option>
-            <option value="trapezoid">사다리꼴</option>
+            <option value="circle" data-i18n="faceCircle">Circle</option>
+            <option value="square" data-i18n="faceSquare">Square</option>
+            <option value="rect-portrait" data-i18n="faceRectPortrait">Rectangle (portrait)</option>
+            <option value="rect-landscape" data-i18n="faceRectLandscape">Rectangle (landscape)</option>
+            <option value="trapezoid" data-i18n="faceTrapezoid">Trapezoid</option>
           </select>
         </section>
 
         <section class="settings__section">
-          <h3>테두리 스타일</h3>
+          <h3 data-i18n="borderStyle">Border style</h3>
           <select id="set-border-style" class="settings__select">
-            <option value="solid">실선</option>
-            <option value="thin">가는 실선</option>
-            <option value="double">이중선</option>
-            <option value="dashed">파선</option>
-            <option value="dotted">점선</option>
-            <option value="ring">링</option>
-            <option value="glow">글로우</option>
-            <option value="raised">입체</option>
-            <option value="classic">클래식</option>
+            <option value="solid" data-i18n="borderSolid">Solid</option>
+            <option value="thin" data-i18n="borderThin">Thin</option>
+            <option value="double" data-i18n="borderDouble">Double</option>
+            <option value="dashed" data-i18n="borderDashed">Dashed</option>
+            <option value="dotted" data-i18n="borderDotted">Dotted</option>
+            <option value="ring" data-i18n="borderRing">Ring</option>
+            <option value="glow" data-i18n="borderGlow">Glow</option>
+            <option value="raised" data-i18n="borderRaised">Raised</option>
+            <option value="classic" data-i18n="borderClassic">Classic</option>
           </select>
         </section>
 
         <section class="settings__section settings__section--colors">
-          <h3>색상</h3>
+          <h3 data-i18n="colors">Colors</h3>
           <div class="settings__colors" id="color-inputs"></div>
-          <button type="button" class="settings__reset-colors" id="btn-reset-colors">색상 초기화</button>
+          <button type="button" class="settings__reset-colors" id="btn-reset-colors" data-i18n="resetColors">Reset colors</button>
+        </section>
+
+        <section class="settings__section settings__section--share">
+          <h3 data-i18n="share">Share</h3>
+          <div class="settings__share">
+            <button type="button" class="settings__share-btn" id="btn-copy-url" data-i18n="copyUrl">Copy settings URL</button>
+            <input type="text" class="settings__share-url" id="share-url" readonly hidden
+                   data-i18n-label="copyUrl" aria-label="Copy settings URL">
+          </div>
         </section>
       </div>
     </form>
