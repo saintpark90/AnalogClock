@@ -207,6 +207,10 @@ body.settings-open .toolbar {
 /* Clock container & face shapes
    --dial: fixed inner dial (numbers/hands). Outer frame (--fx/--fy) grows
    around it so clip-path shapes never cut the dial. */
+body.pinching-clock .clock {
+  transition: none;
+}
+
 .clock {
   --size-base: min(96vmin, calc(100vw - 1.25rem), calc(100dvh - 1.25rem));
   --avail-w: calc(100vw - 1.25rem);

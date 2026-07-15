@@ -1871,6 +1871,75 @@ function adjustClockSize(settingsMgr, delta) {
   if (next !== cur) settingsMgr.set({ clockSize: next });
 }
 
+function setClockSizeLive(settingsMgr, size) {
+  const next = clampClockSize(size);
+  settingsMgr.settings.clockSize = next;
+  settingsMgr.root.style.setProperty("--clock-scale", String(next));
+  return next;
+}
+
+function pinchTouchesDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+
+function shouldIgnorePinchZoom(e, settingsPanel) {
+  if (settingsPanel && !settingsPanel.hidden) return true;
+  if (e.target.closest?.(".settings, .toolbar, input, select, textarea, button, label")) return true;
+  return false;
+}
+
+function bindPinchZoom(settingsMgr, settingsPanel) {
+  let pinching = false;
+  let startDist = 0;
+  let startSize = 0;
+
+  const endPinch = () => {
+    if (!pinching) return;
+    pinching = false;
+    document.body.classList.remove("pinching-clock");
+    settingsMgr.set({ clockSize: settingsMgr.settings.clockSize });
+  };
+
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      if (shouldIgnorePinchZoom(e, settingsPanel)) return;
+      if (e.touches.length !== 2) return;
+      pinching = true;
+      startDist = pinchTouchesDistance(e.touches);
+      startSize = settingsMgr.settings.clockSize ?? 0.75;
+      document.body.classList.add("pinching-clock");
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!pinching || e.touches.length !== 2) return;
+      if (shouldIgnorePinchZoom(e, settingsPanel)) {
+        endPinch();
+        return;
+      }
+      if (startDist <= 0) return;
+      e.preventDefault();
+      const ratio = pinchTouchesDistance(e.touches) / startDist;
+      setClockSizeLive(settingsMgr, startSize * ratio);
+    },
+    { passive: false }
+  );
+
+  document.addEventListener("touchend", (e) => {
+    if (!pinching) return;
+    if (e.touches.length >= 2) return;
+    endPinch();
+  });
+
+  document.addEventListener("touchcancel", endPinch);
+}
+
 function bindWheel(settingsMgr, settingsPanel) {
   window.addEventListener(
     "wheel",
@@ -1980,6 +2049,7 @@ async function init() {
   bindBackgroundImages(imageStore, panel);
   bindKeyboard(fullscreen, panel, settingsMgr);
   bindWheel(settingsMgr, panel);
+  bindPinchZoom(settingsMgr, panel);
   bindFullscreenAutohide(panel);
 
   // Browsers require a user gesture before audio can play.
