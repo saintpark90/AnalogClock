@@ -59,9 +59,21 @@
 
   <aside class="settings" id="settings-panel" hidden aria-labelledby="settings-title">
     <form class="settings__form">
+      <div class="settings__sheet-grab" data-sheet-grab>
+        <div class="settings__sheet-handle" aria-hidden="true"></div>
+      </div>
       <header class="settings__header">
         <h2 id="settings-title" data-i18n="panelTitle">Settings</h2>
-        <button type="button" class="settings__close" data-close data-i18n-label="close" aria-label="Close">×</button>
+        <div class="settings__header-actions">
+          <label class="settings__peek" id="settings-peek-label" data-i18n-title="settingsPeekTitle" title="See clock through settings panel">
+            <span class="settings__peek-control">
+              <input type="checkbox" id="set-settings-peek" class="settings__peek-input">
+              <span class="settings__peek-box" aria-hidden="true"></span>
+            </span>
+            <span class="settings__peek-label" data-i18n="settingsPeek">See-through</span>
+          </label>
+          <button type="button" class="settings__close" data-close data-i18n-label="close" aria-label="Close">×</button>
+        </div>
       </header>
 
       <div class="settings__body">
@@ -235,6 +247,11 @@
                    data-i18n-label="copyUrl" aria-label="Copy settings URL">
           </div>
         </section>
+
+        <footer class="settings__footer">
+          <p class="settings__footer-hint" data-i18n="devFeedback">Suggestions &amp; feedback</p>
+          <a class="settings__footer-email" href="mailto:palk876@gmail.com">palk876@gmail.com</a>
+        </footer>
       </div>
     </form>
   </aside>

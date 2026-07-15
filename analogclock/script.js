@@ -385,6 +385,7 @@ const I18N = {
     toolbarAria: "Tools", fullscreen: "Fullscreen", fullscreenTitle: "Fullscreen (F)",
     toLight: "Switch to light mode", toDark: "Switch to dark mode", themeTitle: "Dark / Light (L)",
     settings: "Settings", settingsTitle: "Settings (S)", panelTitle: "Settings", close: "Close",
+    settingsPeek: "See-through", settingsPeekTitle: "See clock through settings panel",
     clockAria: "Analog clock", language: "Language",
     theme: "Theme", themeClassic: "Classic", themeMidnight: "Midnight", themeDaylight: "Daylight", themeOcean: "Ocean Blue",
     themeBurgundy: "Burgundy", themeForest: "Forest", themeSunset: "Sunset", themeAmethyst: "Amethyst",
@@ -409,6 +410,7 @@ const I18N = {
     bgImageChoose: "Choose image", bgImagePaste: "Paste", bgImageClear: "Clear",
     bgImageDrop: "Click, drop, or paste", bgImagePasteFail: "No image in clipboard",
     share: "Share", copyUrl: "Copy settings URL", copied: "Copied!",
+    devFeedback: "Suggestions & feedback",
     colorBg: "Background", colorFaceBorder: "Clock border", colorFaceBg: "Clock face", colorNumber: "Numbers",
     colorMarker: "Ticks", colorMarkerMajor: "Major ticks", colorHandHour: "Hour hand",
     colorHandMinute: "Minute hand", colorHandSecond: "Second hand", colorHub: "Center", colorHubRing: "Center ring",
@@ -417,6 +419,7 @@ const I18N = {
     toolbarAria: "도구", fullscreen: "전체화면", fullscreenTitle: "전체화면 (F)",
     toLight: "라이트 모드로 전환", toDark: "다크 모드로 전환", themeTitle: "다크 / 라이트 (L)",
     settings: "설정", settingsTitle: "설정 (S)", panelTitle: "설정", close: "닫기",
+    settingsPeek: "반투명", settingsPeekTitle: "설정창을 반투명하게 해 시계 보기",
     clockAria: "아날로그 시계", language: "언어",
     theme: "테마", themeClassic: "클래식", themeMidnight: "미드나잇", themeDaylight: "데이라이트", themeOcean: "오션 블루",
     themeBurgundy: "버건디", themeForest: "포레스트", themeSunset: "선셋", themeAmethyst: "자수정",
@@ -441,6 +444,7 @@ const I18N = {
     bgImageChoose: "이미지 선택", bgImagePaste: "붙여넣기", bgImageClear: "지우기",
     bgImageDrop: "클릭 · 드롭 · 붙여넣기", bgImagePasteFail: "클립보드에 이미지가 없습니다",
     share: "공유", copyUrl: "설정 URL 복사", copied: "복사됨!",
+    devFeedback: "개선 제안 및 문의",
     colorBg: "화면 배경", colorFaceBorder: "시계 테두리", colorFaceBg: "시계 배경", colorNumber: "숫자",
     colorMarker: "눈금", colorMarkerMajor: "주 눈금", colorHandHour: "시침",
     colorHandMinute: "분침", colorHandSecond: "초침", colorHub: "중심점", colorHubRing: "중심 링",
@@ -449,6 +453,7 @@ const I18N = {
     toolbarAria: "ツール", fullscreen: "全画面", fullscreenTitle: "全画面 (F)",
     toLight: "ライトモードに切替", toDark: "ダークモードに切替", themeTitle: "ダーク / ライト (L)",
     settings: "設定", settingsTitle: "設定 (S)", panelTitle: "設定", close: "閉じる",
+    settingsPeek: "半透明", settingsPeekTitle: "設定パネルを半透明にして時計を表示",
     clockAria: "アナログ時計", language: "言語",
     theme: "テーマ", themeClassic: "クラシック", themeMidnight: "ミッドナイト", themeDaylight: "デイライト", themeOcean: "オーシャンブルー",
     themeBurgundy: "バーガンディ", themeForest: "フォレスト", themeSunset: "サンセット", themeAmethyst: "アメジスト",
@@ -473,6 +478,7 @@ const I18N = {
     bgImageChoose: "画像を選択", bgImagePaste: "貼り付け", bgImageClear: "クリア",
     bgImageDrop: "クリック・ドロップ・貼付", bgImagePasteFail: "クリップボードに画像がありません",
     share: "共有", copyUrl: "設定URLをコピー", copied: "コピーしました！",
+    devFeedback: "改善提案・お問い合わせ",
     colorBg: "背景", colorFaceBorder: "時計の枠", colorFaceBg: "文字盤", colorNumber: "数字",
     colorMarker: "目盛り", colorMarkerMajor: "主目盛り", colorHandHour: "時針",
     colorHandMinute: "分針", colorHandSecond: "秒針", colorHub: "中心", colorHubRing: "中心リング",
@@ -481,6 +487,7 @@ const I18N = {
     toolbarAria: "工具", fullscreen: "全屏", fullscreenTitle: "全屏 (F)",
     toLight: "切换到浅色模式", toDark: "切换到深色模式", themeTitle: "深色 / 浅色 (L)",
     settings: "设置", settingsTitle: "设置 (S)", panelTitle: "设置", close: "关闭",
+    settingsPeek: "半透明", settingsPeekTitle: "半透明显示设置面板以查看时钟",
     clockAria: "模拟时钟", language: "语言",
     theme: "主题", themeClassic: "经典", themeMidnight: "午夜", themeDaylight: "日光", themeOcean: "海洋蓝",
     themeBurgundy: "勃艮第红", themeForest: "森林", themeSunset: "日落", themeAmethyst: "紫水晶",
@@ -505,6 +512,7 @@ const I18N = {
     bgImageChoose: "选择图片", bgImagePaste: "粘贴", bgImageClear: "清除",
     bgImageDrop: "点击、拖放或粘贴", bgImagePasteFail: "剪贴板中没有图片",
     share: "分享", copyUrl: "复制设置链接", copied: "已复制！",
+    devFeedback: "改进建议与反馈",
     colorBg: "背景", colorFaceBorder: "表盘边框", colorFaceBg: "表盘", colorNumber: "数字",
     colorMarker: "刻度", colorMarkerMajor: "主刻度", colorHandHour: "时针",
     colorHandMinute: "分针", colorHandSecond: "秒针", colorHub: "中心", colorHubRing: "中心环",
@@ -513,6 +521,7 @@ const I18N = {
     toolbarAria: "Herramientas", fullscreen: "Pantalla completa", fullscreenTitle: "Pantalla completa (F)",
     toLight: "Cambiar a modo claro", toDark: "Cambiar a modo oscuro", themeTitle: "Oscuro / Claro (L)",
     settings: "Ajustes", settingsTitle: "Ajustes (S)", panelTitle: "Ajustes", close: "Cerrar",
+    settingsPeek: "Transparente", settingsPeekTitle: "Ver el reloj a través del panel",
     clockAria: "Reloj analógico", language: "Idioma",
     theme: "Tema", themeClassic: "Clásico", themeMidnight: "Medianoche", themeDaylight: "Luz de día", themeOcean: "Azul océano",
     themeBurgundy: "Borgoña", themeForest: "Bosque", themeSunset: "Atardecer", themeAmethyst: "Amatista",
@@ -537,6 +546,7 @@ const I18N = {
     bgImageChoose: "Elegir imagen", bgImagePaste: "Pegar", bgImageClear: "Quitar",
     bgImageDrop: "Clic, soltar o pegar", bgImagePasteFail: "No hay imagen en el portapapeles",
     share: "Compartir", copyUrl: "Copiar URL de ajustes", copied: "¡Copiado!",
+    devFeedback: "Sugerencias y comentarios",
     colorBg: "Fondo", colorFaceBorder: "Borde del reloj", colorFaceBg: "Esfera", colorNumber: "Números",
     colorMarker: "Marcas", colorMarkerMajor: "Marcas principales", colorHandHour: "Aguja de hora",
     colorHandMinute: "Aguja de minuto", colorHandSecond: "Aguja de segundo", colorHub: "Centro", colorHubRing: "Anillo central",
@@ -545,6 +555,7 @@ const I18N = {
     toolbarAria: "Outils", fullscreen: "Plein écran", fullscreenTitle: "Plein écran (F)",
     toLight: "Passer en mode clair", toDark: "Passer en mode sombre", themeTitle: "Sombre / Clair (L)",
     settings: "Paramètres", settingsTitle: "Paramètres (S)", panelTitle: "Paramètres", close: "Fermer",
+    settingsPeek: "Transparent", settingsPeekTitle: "Voir l'horloge à travers le panneau",
     clockAria: "Horloge analogique", language: "Langue",
     theme: "Thème", themeClassic: "Classique", themeMidnight: "Minuit", themeDaylight: "Lumière du jour", themeOcean: "Bleu océan",
     themeBurgundy: "Bordeaux", themeForest: "Forêt", themeSunset: "Coucher de soleil", themeAmethyst: "Améthyste",
@@ -569,6 +580,7 @@ const I18N = {
     bgImageChoose: "Choisir une image", bgImagePaste: "Coller", bgImageClear: "Effacer",
     bgImageDrop: "Cliquer, déposer ou coller", bgImagePasteFail: "Pas d'image dans le presse-papiers",
     share: "Partager", copyUrl: "Copier l'URL des réglages", copied: "Copié !",
+    devFeedback: "Suggestions et retours",
     colorBg: "Arrière-plan", colorFaceBorder: "Bordure de l'horloge", colorFaceBg: "Cadran", colorNumber: "Chiffres",
     colorMarker: "Graduations", colorMarkerMajor: "Graduations principales", colorHandHour: "Aiguille des heures",
     colorHandMinute: "Aiguille des minutes", colorHandSecond: "Aiguille des secondes", colorHub: "Centre", colorHubRing: "Anneau central",
@@ -577,6 +589,7 @@ const I18N = {
     toolbarAria: "Werkzeuge", fullscreen: "Vollbild", fullscreenTitle: "Vollbild (F)",
     toLight: "Zum hellen Modus", toDark: "Zum dunklen Modus", themeTitle: "Dunkel / Hell (L)",
     settings: "Einstellungen", settingsTitle: "Einstellungen (S)", panelTitle: "Einstellungen", close: "Schließen",
+    settingsPeek: "Durchsichtig", settingsPeekTitle: "Uhr durch das Panel sehen",
     clockAria: "Analoguhr", language: "Sprache",
     theme: "Thema", themeClassic: "Klassisch", themeMidnight: "Mitternacht", themeDaylight: "Tageslicht", themeOcean: "Ozeanblau",
     themeBurgundy: "Bordeaux", themeForest: "Wald", themeSunset: "Sonnenuntergang", themeAmethyst: "Amethyst",
@@ -601,6 +614,7 @@ const I18N = {
     bgImageChoose: "Bild wählen", bgImagePaste: "Einfügen", bgImageClear: "Entfernen",
     bgImageDrop: "Klicken, ablegen oder einfügen", bgImagePasteFail: "Kein Bild in der Zwischenablage",
     share: "Teilen", copyUrl: "Einstellungs-URL kopieren", copied: "Kopiert!",
+    devFeedback: "Verbesserungsvorschläge",
     colorBg: "Hintergrund", colorFaceBorder: "Uhrenrand", colorFaceBg: "Zifferblatt", colorNumber: "Zahlen",
     colorMarker: "Markierungen", colorMarkerMajor: "Hauptmarkierungen", colorHandHour: "Stundenzeiger",
     colorHandMinute: "Minutenzeiger", colorHandSecond: "Sekundenzeiger", colorHub: "Mittelpunkt", colorHubRing: "Mittelring",
@@ -609,6 +623,7 @@ const I18N = {
     toolbarAria: "Strumenti", fullscreen: "Schermo intero", fullscreenTitle: "Schermo intero (F)",
     toLight: "Passa alla modalità chiara", toDark: "Passa alla modalità scura", themeTitle: "Scuro / Chiaro (L)",
     settings: "Impostazioni", settingsTitle: "Impostazioni (S)", panelTitle: "Impostazioni", close: "Chiudi",
+    settingsPeek: "Trasparente", settingsPeekTitle: "Vedere l'orologio attraverso il pannello",
     clockAria: "Orologio analogico", language: "Lingua",
     theme: "Tema", themeClassic: "Classico", themeMidnight: "Mezzanotte", themeDaylight: "Luce del giorno", themeOcean: "Blu oceano",
     themeBurgundy: "Bordeaux", themeForest: "Foresta", themeSunset: "Tramonto", themeAmethyst: "Ametista",
@@ -633,6 +648,7 @@ const I18N = {
     bgImageChoose: "Scegli immagine", bgImagePaste: "Incolla", bgImageClear: "Rimuovi",
     bgImageDrop: "Clic, rilascia o incolla", bgImagePasteFail: "Nessuna immagine negli appunti",
     share: "Condividi", copyUrl: "Copia URL impostazioni", copied: "Copiato!",
+    devFeedback: "Suggerimenti e feedback",
     colorBg: "Sfondo", colorFaceBorder: "Bordo orologio", colorFaceBg: "Quadrante", colorNumber: "Numeri",
     colorMarker: "Tacche", colorMarkerMajor: "Tacche principali", colorHandHour: "Lancetta ore",
     colorHandMinute: "Lancetta minuti", colorHandSecond: "Lancetta secondi", colorHub: "Centro", colorHubRing: "Anello centrale",
@@ -641,6 +657,7 @@ const I18N = {
     toolbarAria: "Ferramentas", fullscreen: "Tela cheia", fullscreenTitle: "Tela cheia (F)",
     toLight: "Mudar para modo claro", toDark: "Mudar para modo escuro", themeTitle: "Escuro / Claro (L)",
     settings: "Configurações", settingsTitle: "Configurações (S)", panelTitle: "Configurações", close: "Fechar",
+    settingsPeek: "Transparente", settingsPeekTitle: "Ver o relógio através do painel",
     clockAria: "Relógio analógico", language: "Idioma",
     theme: "Tema", themeClassic: "Clássico", themeMidnight: "Meia-noite", themeDaylight: "Luz do dia", themeOcean: "Azul oceano",
     themeBurgundy: "Borgonha", themeForest: "Floresta", themeSunset: "Pôr do sol", themeAmethyst: "Ametista",
@@ -665,6 +682,7 @@ const I18N = {
     bgImageChoose: "Escolher imagem", bgImagePaste: "Colar", bgImageClear: "Limpar",
     bgImageDrop: "Clique, solte ou cole", bgImagePasteFail: "Nenhuma imagem na área de transferência",
     share: "Compartilhar", copyUrl: "Copiar URL das configurações", copied: "Copiado!",
+    devFeedback: "Sugestões e feedback",
     colorBg: "Fundo", colorFaceBorder: "Borda do relógio", colorFaceBg: "Mostrador", colorNumber: "Números",
     colorMarker: "Marcas", colorMarkerMajor: "Marcas principais", colorHandHour: "Ponteiro das horas",
     colorHandMinute: "Ponteiro dos minutos", colorHandSecond: "Ponteiro dos segundos", colorHub: "Centro", colorHubRing: "Anel central",
@@ -673,6 +691,7 @@ const I18N = {
     toolbarAria: "Инструменты", fullscreen: "Полный экран", fullscreenTitle: "Полный экран (F)",
     toLight: "Светлая тема", toDark: "Тёмная тема", themeTitle: "Тёмная / Светлая (L)",
     settings: "Настройки", settingsTitle: "Настройки (S)", panelTitle: "Настройки", close: "Закрыть",
+    settingsPeek: "Прозрачность", settingsPeekTitle: "Видеть часы сквозь панель",
     clockAria: "Аналоговые часы", language: "Язык",
     theme: "Тема", themeClassic: "Классика", themeMidnight: "Полночь", themeDaylight: "Дневной свет", themeOcean: "Океан",
     themeBurgundy: "Бордовый", themeForest: "Лес", themeSunset: "Закат", themeAmethyst: "Аметист",
@@ -697,6 +716,7 @@ const I18N = {
     bgImageChoose: "Выбрать изображение", bgImagePaste: "Вставить", bgImageClear: "Удалить",
     bgImageDrop: "Клик, перетаскивание или вставка", bgImagePasteFail: "В буфере обмена нет изображения",
     share: "Поделиться", copyUrl: "Копировать URL настроек", copied: "Скопировано!",
+    devFeedback: "Предложения и отзывы",
     colorBg: "Фон", colorFaceBorder: "Рамка часов", colorFaceBg: "Циферблат", colorNumber: "Цифры",
     colorMarker: "Метки", colorMarkerMajor: "Основные метки", colorHandHour: "Часовая стрелка",
     colorHandMinute: "Минутная стрелка", colorHandSecond: "Секундная стрелка", colorHub: "Центр", colorHubRing: "Центральное кольцо",
@@ -705,6 +725,7 @@ const I18N = {
     toolbarAria: "उपकरण", fullscreen: "पूर्ण स्क्रीन", fullscreenTitle: "पूर्ण स्क्रीन (F)",
     toLight: "लाइट मोड पर जाएँ", toDark: "डार्क मोड पर जाएँ", themeTitle: "डार्क / लाइट (L)",
     settings: "सेटिंग्स", settingsTitle: "सेटिंग्स (S)", panelTitle: "सेटिंग्स", close: "बंद करें",
+    settingsPeek: "पारदर्शी", settingsPeekTitle: "पैनल के पीछे घड़ी देखें",
     clockAria: "एनालॉग घड़ी", language: "भाषा",
     theme: "थीम", themeClassic: "क्लासिक", themeMidnight: "मध्यरात्रि", themeDaylight: "दिन का उजाला", themeOcean: "समुद्री नीला",
     themeBurgundy: "बरगंडी", themeForest: "वन", themeSunset: "सूर्यास्त", themeAmethyst: "नीलम",
@@ -729,6 +750,7 @@ const I18N = {
     bgImageChoose: "चित्र चुनें", bgImagePaste: "पेस्ट", bgImageClear: "हटाएँ",
     bgImageDrop: "क्लिक, ड्रॉप या पेस्ट", bgImagePasteFail: "क्लिपबोर्ड में चित्र नहीं है",
     share: "साझा करें", copyUrl: "सेटिंग्स URL कॉपी करें", copied: "कॉपी किया गया!",
+    devFeedback: "सुझाव और प्रतिक्रिया",
     colorBg: "पृष्ठभूमि", colorFaceBorder: "घड़ी का किनारा", colorFaceBg: "डायल", colorNumber: "अंक",
     colorMarker: "निशान", colorMarkerMajor: "मुख्य निशान", colorHandHour: "घंटा सुई",
     colorHandMinute: "मिनट सुई", colorHandSecond: "सेकंड सुई", colorHub: "केंद्र", colorHubRing: "केंद्र वलय",
@@ -737,6 +759,7 @@ const I18N = {
     toolbarAria: "أدوات", fullscreen: "ملء الشاشة", fullscreenTitle: "ملء الشاشة (F)",
     toLight: "التبديل إلى الوضع الفاتح", toDark: "التبديل إلى الوضع الداكن", themeTitle: "داكن / فاتح (L)",
     settings: "الإعدادات", settingsTitle: "الإعدادات (S)", panelTitle: "الإعدادات", close: "إغلاق",
+    settingsPeek: "شفاف", settingsPeekTitle: "رؤية الساعة من خلال اللوحة",
     clockAria: "ساعة تناظرية", language: "اللغة",
     theme: "السمة", themeClassic: "كلاسيكي", themeMidnight: "منتصف الليل", themeDaylight: "ضوء النهار", themeOcean: "أزرق محيطي",
     themeBurgundy: "عنابي", themeForest: "غابة", themeSunset: "غروب", themeAmethyst: "جمشت",
@@ -761,6 +784,7 @@ const I18N = {
     bgImageChoose: "اختر صورة", bgImagePaste: "لصق", bgImageClear: "مسح",
     bgImageDrop: "انقر أو أفلت أو الصق", bgImagePasteFail: "لا توجد صورة في الحافظة",
     share: "مشاركة", copyUrl: "نسخ رابط الإعدادات", copied: "تم النسخ!",
+    devFeedback: "اقتراحات وملاحظات",
     colorBg: "الخلفية", colorFaceBorder: "إطار الساعة", colorFaceBg: "وجه الساعة", colorNumber: "الأرقام",
     colorMarker: "العلامات", colorMarkerMajor: "العلامات الرئيسية", colorHandHour: "عقرب الساعات",
     colorHandMinute: "عقرب الدقائق", colorHandSecond: "عقرب الثواني", colorHub: "المركز", colorHubRing: "الحلقة المركزية",
@@ -977,6 +1001,7 @@ const DEFAULT_SETTINGS = {
   colorMode: "dark",
   numberSize: 1,
   clockSize: 0.75,
+  settingsPeek: false,
   numeral: "arabic",
   handStyle: "bar",
   secondMotion: "smooth",
@@ -1048,6 +1073,7 @@ function normalizeSettings(saved) {
     tickSound: Boolean(src.tickSound) && secondMotion === "tick",
     tickSoundId,
     clockSize: clampClockSize(src.clockSize ?? cloneDefaults().clockSize),
+    settingsPeek: Boolean(src.settingsPeek),
     colors: { ...palette, ...(src.colors || {}) },
   };
 }
@@ -1084,6 +1110,7 @@ function buildShareUrl(settings) {
     colorMode: settings.colorMode,
     numberSize: settings.numberSize,
     clockSize: settings.clockSize,
+    settingsPeek: settings.settingsPeek,
     numeral: settings.numeral,
     handStyle: settings.handStyle,
     secondMotion: settings.secondMotion,
@@ -1549,6 +1576,121 @@ function syncTickSoundControls(settings) {
   }
 }
 
+const MOBILE_SHEET_MQ = "(max-width: 768px)";
+const SHEET_COLLAPSED_RATIO = 0.78;
+const SHEET_COLLAPSED_MAX = 560;
+const SHEET_CLOSE_RATIO = 0.22;
+const SHEET_EXPAND_RATIO = 0.55;
+const SHEET_DRAG_THRESHOLD = 6;
+const SHEET_TRANSITION_MS = 320;
+
+function waitForSheetTransition(panel, cb) {
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    panel.removeEventListener("transitionend", onEnd);
+    clearTimeout(timer);
+    cb();
+  };
+  const onEnd = (e) => {
+    if (e.target !== panel || e.propertyName !== "transform") return;
+    finish();
+  };
+  panel.addEventListener("transitionend", onEnd);
+  const timer = setTimeout(finish, SHEET_TRANSITION_MS + 50);
+}
+
+function isMobileSheet() {
+  return window.matchMedia(MOBILE_SHEET_MQ).matches;
+}
+
+function motionOk() {
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function bindMobileSettingsSheet(panel, closeSettings) {
+  const grab = panel.querySelector("[data-sheet-grab]");
+  if (!grab) return;
+
+  const mq = window.matchMedia(MOBILE_SHEET_MQ);
+  let dragging = false;
+  let startY = 0;
+  let startHeight = 0;
+  let moved = false;
+
+  const collapsedHeight = () =>
+    Math.min(window.innerHeight * SHEET_COLLAPSED_RATIO, SHEET_COLLAPSED_MAX);
+
+  const expandedHeight = () => window.innerHeight;
+
+  const clearDragStyle = () => {
+    panel.style.height = "";
+    panel.style.maxHeight = "";
+    panel.classList.remove("settings--dragging");
+  };
+
+  const snapSheet = (height) => {
+    clearDragStyle();
+    const collapsed = collapsedHeight();
+    const expanded = expandedHeight();
+    if (height < collapsed * SHEET_CLOSE_RATIO) {
+      closeSettings();
+      return;
+    }
+    if (height > collapsed + (expanded - collapsed) * SHEET_EXPAND_RATIO) {
+      panel.classList.add("settings--expanded");
+    } else {
+      panel.classList.remove("settings--expanded");
+    }
+  };
+
+  grab.addEventListener("pointerdown", (e) => {
+    if (!mq.matches || panel.hidden || panel.classList.contains("settings--sheet-closed")) return;
+    dragging = true;
+    moved = false;
+    startY = e.clientY;
+    startHeight = panel.getBoundingClientRect().height;
+    panel.classList.add("settings--dragging");
+    panel.classList.remove("settings--expanded");
+    panel.style.maxHeight = "none";
+    panel.style.height = `${startHeight}px`;
+    grab.setPointerCapture(e.pointerId);
+  });
+
+  grab.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const delta = startY - e.clientY;
+    if (Math.abs(delta) >= SHEET_DRAG_THRESHOLD) moved = true;
+    const next = Math.min(expandedHeight(), Math.max(0, startHeight + delta));
+    panel.style.height = `${next}px`;
+  });
+
+  const endDrag = (e) => {
+    if (!dragging) return;
+    dragging = false;
+    if (grab.hasPointerCapture?.(e.pointerId)) {
+      grab.releasePointerCapture(e.pointerId);
+    }
+    if (!moved) {
+      clearDragStyle();
+      panel.classList.toggle("settings--expanded");
+      return;
+    }
+    snapSheet(panel.getBoundingClientRect().height);
+  };
+
+  grab.addEventListener("pointerup", endDrag);
+  grab.addEventListener("pointercancel", endDrag);
+}
+
+function syncSettingsPeek(panel, settings, isOpen = document.body.classList.contains("settings-open")) {
+  if (!panel) return;
+  const peek = Boolean(settings.settingsPeek) && isMobileSheet();
+  panel.classList.toggle("settings--peek", peek);
+  document.body.classList.toggle("settings-peek", peek && isOpen);
+}
+
 function bindSettingsUI(settingsMgr, tickPlayer) {
   const panel = document.getElementById("settings-panel");
   const btnSettings = document.getElementById("btn-settings");
@@ -1606,28 +1748,84 @@ function bindSettingsUI(settingsMgr, tickPlayer) {
   const btnResetClockSize = document.getElementById("btn-reset-clock-size");
   const btnCopyUrl = document.getElementById("btn-copy-url");
   const shareUrlInput = document.getElementById("share-url");
+  const peekCheck = document.getElementById("set-settings-peek");
 
   buildColorInputs(colorContainer, settingsMgr.settings);
+  syncSettingsPeek(panel, settingsMgr.settings, false);
+
+  let sheetAnimating = false;
+
+  const resetMobileSheet = () => {
+    panel.classList.remove("settings--expanded", "settings--dragging", "settings--sheet-closed");
+    panel.style.height = "";
+    panel.style.maxHeight = "";
+  };
+
+  const isPanelShown = () =>
+    !panel.hidden && !panel.classList.contains("settings--sheet-closed");
 
   const openSettings = () => {
-    panel.hidden = false;
-    document.body.classList.add("settings-open");
-    btnSettings?.setAttribute("aria-expanded", "true");
+    if (sheetAnimating) return;
+    resetMobileSheet();
+    if (isMobileSheet() && motionOk()) {
+      panel.hidden = false;
+      panel.classList.add("settings--sheet-closed");
+      document.body.classList.add("settings-open");
+      btnSettings?.setAttribute("aria-expanded", "true");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          panel.classList.remove("settings--sheet-closed");
+        });
+      });
+    } else {
+      panel.hidden = false;
+      document.body.classList.add("settings-open");
+      btnSettings?.setAttribute("aria-expanded", "true");
+    }
     settingsMgr._syncColorInputs();
+    syncSettingsPeek(panel, settingsMgr.settings, true);
   };
 
   const closeSettings = () => {
+    if (panel.hidden || sheetAnimating) return;
+    btnSettings?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("settings-peek");
+    if (isMobileSheet() && motionOk()) {
+      sheetAnimating = true;
+      resetMobileSheet();
+      panel.classList.add("settings--sheet-closed");
+      waitForSheetTransition(panel, () => {
+        panel.hidden = true;
+        panel.classList.remove("settings--sheet-closed");
+        document.body.classList.remove("settings-open");
+        sheetAnimating = false;
+      });
+      return;
+    }
     panel.hidden = true;
     document.body.classList.remove("settings-open");
-    btnSettings?.setAttribute("aria-expanded", "false");
+    resetMobileSheet();
   };
 
+  peekCheck?.addEventListener("change", () => {
+    settingsMgr.set({ settingsPeek: peekCheck.checked });
+    syncSettingsPeek(panel, settingsMgr.settings, isPanelShown());
+  });
+
   btnSettings?.addEventListener("click", () => {
-    if (!panel.hidden) closeSettings();
+    if (isPanelShown()) closeSettings();
     else openSettings();
   });
   panel.querySelectorAll("[data-close]").forEach((el) => {
     el.addEventListener("click", closeSettings);
+  });
+
+  bindMobileSettingsSheet(panel, closeSettings);
+  document.addEventListener("click", (e) => {
+    if (!isPanelShown() || sheetAnimating || !isMobileSheet()) return;
+    if (panel.contains(e.target)) return;
+    if (e.target.closest?.(".toolbar")) return;
+    closeSettings();
   });
 
   btnColorMode?.addEventListener("click", () => {
@@ -1812,7 +2010,10 @@ function bindSettingsUI(settingsMgr, tickPlayer) {
     if (faceSelect) faceSelect.value = s.faceShape;
     if (borderSelect) borderSelect.value = s.borderStyle;
     syncColorModeButton(btnColorMode, s.colorMode);
+    syncSettingsPeek(panel, s, isPanelShown());
   });
+
+  return { closeSettings, openSettings };
 }
 
 function syncColorModeButton(btn, mode) {
@@ -1854,6 +2055,10 @@ function syncUIFromSettings(settingsMgr) {
   if (faceSelect) faceSelect.value = s.faceShape;
   if (borderSelect) borderSelect.value = s.borderStyle ?? "solid";
   syncColorModeButton(document.getElementById("btn-color-mode"), s.colorMode);
+  const peekCheck = document.getElementById("set-settings-peek");
+  const panel = document.getElementById("settings-panel");
+  if (peekCheck) peekCheck.checked = Boolean(s.settingsPeek);
+  syncSettingsPeek(panel, s);
 }
 
 const CLOCK_SIZE_MIN = 0.35;
@@ -1986,7 +2191,7 @@ function bindFullscreenAutohide(settingsPanel) {
   });
 }
 
-function bindKeyboard(fullscreen, settingsPanel, settingsMgr) {
+function bindKeyboard(fullscreen, settingsPanel, settingsMgr, closeSettings) {
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input, select, textarea")) return;
     if (e.key === "+" || e.key === "=") {
@@ -2010,9 +2215,7 @@ function bindKeyboard(fullscreen, settingsPanel, settingsMgr) {
       e.preventDefault();
       document.getElementById("btn-settings")?.click();
     } else if (key === "escape" && !settingsPanel.hidden) {
-      settingsPanel.hidden = true;
-      document.body.classList.remove("settings-open");
-      document.getElementById("btn-settings")?.setAttribute("aria-expanded", "false");
+      closeSettings?.();
     }
   });
 }
@@ -2045,9 +2248,9 @@ async function init() {
   const fullscreen = new FullscreenController(document.getElementById("btn-fullscreen"));
   const panel = document.getElementById("settings-panel");
 
-  bindSettingsUI(settingsMgr, tickPlayer);
+  const { closeSettings } = bindSettingsUI(settingsMgr, tickPlayer);
   bindBackgroundImages(imageStore, panel);
-  bindKeyboard(fullscreen, panel, settingsMgr);
+  bindKeyboard(fullscreen, panel, settingsMgr, closeSettings);
   bindWheel(settingsMgr, panel);
   bindPinchZoom(settingsMgr, panel);
   bindFullscreenAutohide(panel);
