@@ -1885,6 +1885,38 @@ function bindWheel(settingsMgr, settingsPanel) {
   );
 }
 
+function bindFullscreenAutohide(settingsPanel) {
+  let hideTimer = null;
+  const isFs = () => Boolean(document.fullscreenElement);
+
+  const hideToolbar = () => {
+    if (!isFs()) return;
+    if (settingsPanel && !settingsPanel.hidden) return;
+    document.body.classList.remove("toolbar-visible");
+  };
+
+  const showToolbar = () => {
+    if (!isFs()) return;
+    document.body.classList.add("toolbar-visible");
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hideToolbar, 3000);
+  };
+
+  document.addEventListener("fullscreenchange", () => {
+    clearTimeout(hideTimer);
+    if (isFs()) {
+      document.body.classList.add("is-fullscreen");
+      document.body.classList.remove("toolbar-visible");
+    } else {
+      document.body.classList.remove("is-fullscreen", "toolbar-visible");
+    }
+  });
+
+  document.addEventListener("click", () => {
+    if (isFs()) showToolbar();
+  });
+}
+
 function bindKeyboard(fullscreen, settingsPanel, settingsMgr) {
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input, select, textarea")) return;
@@ -1948,6 +1980,7 @@ async function init() {
   bindBackgroundImages(imageStore, panel);
   bindKeyboard(fullscreen, panel, settingsMgr);
   bindWheel(settingsMgr, panel);
+  bindFullscreenAutohide(panel);
 
   // Browsers require a user gesture before audio can play.
   const unlockAudioOnce = () => {

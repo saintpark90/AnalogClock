@@ -166,6 +166,19 @@ body::before {
   z-index: 10000;
 }
 
+/* 전체화면에서는 툴바를 숨기고, 화면을 클릭하면 잠시 나타남 */
+body.is-fullscreen .toolbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+body.is-fullscreen.toolbar-visible .toolbar,
+body.is-fullscreen.settings-open .toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* 시계(왼쪽) + 설정(오른쪽) */
 .app-layout {
   display: flex;
